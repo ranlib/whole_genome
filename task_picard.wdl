@@ -147,8 +147,6 @@ task CollectMultipleMetrics {
       #FIXME: Boolean rnaSeqMetrics = false # There is a bug in picard https://github.com/broadinstitute/picard/issues/999
       Boolean collectSequencingArtifactMetrics = true
       Boolean collectQualityYieldMetrics = true
-      Boolean collectWgsMetrics = true
-      Boolean collectRawWgsMetrics = true
       
       Int javaXmxMb = 3072
       Int memoryMb = javaXmxMb + 512
