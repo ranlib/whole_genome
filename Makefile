@@ -15,3 +15,20 @@ ngs_pipeline_docu:
 run_ngs_pipeline:
 	miniwdl run --debug --dir test-ngs_pipeline --cfg miniwdl_production.cfg --input wf_ngs_pipeline.json wf_ngs_pipeline.wdl
 
+#
+# seqkit
+#
+seqkit:
+	womtool validate --inputs wf_seqkit.json wf_seqkit.wdl
+	miniwdl check wf_seqkit.wdl
+
+seqkit_docu:
+	wdl-aid wf_seqkit.wdl -o wf_seqkit.md
+	womtool graph wf_seqkit.wdl > wf_seqkit.dot
+	dot -Tpdf -o wf_seqkit.pdf wf_seqkit.dot
+	dot -Tjpeg -o wf_seqkit.jpeg wf_seqkit.dot
+	rm wf_seqkit.dot
+
+run_seqkit:
+	miniwdl run --debug --dir test-seqkit --cfg miniwdl_production.cfg --input wf_seqkit.json wf_seqkit.wdl
+
