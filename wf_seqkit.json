@@ -1,14 +1,14 @@
 {
-    "seqkit_stats_workflow.all_stats": true,
-    "seqkit_stats_workflow.fq_encoding": "sanger",
-    "seqkit_stats_workflow.gap_letters": "'- .'",
-    "seqkit_stats_workflow.input_file": ["data/ERR552797_30percent_1.fq.gz", "data/ERR552797_30percent_2.fq.gz"],
-    "seqkit_stats_workflow.memory": "48GB",
-    "seqkit_stats_workflow.out_file": "stats.tsv",
-    "seqkit_stats_workflow.docker": "dbest/seqkit:v2.10.0",
-    "seqkit_stats_workflow.skip_err": false,
-    "seqkit_stats_workflow.skip_file_check": false,
-    "seqkit_stats_workflow.tabular": true,
-    "seqkit_stats_workflow.threads": 4,
-    "seqkit_stats_workflow.use_basename": true
+    "wf_seqkit.all_stats": true,
+    "wf_seqkit.fq_encoding": "sanger",
+    "wf_seqkit.gap_letters": "'- .'",
+    "wf_seqkit.input_file": ["data/ERR552797_30percent_1.fq.gz", "data/ERR552797_30percent_2.fq.gz"],
+    "wf_seqkit.memory": "48GB",
+    "wf_seqkit.out_file": "stats.tsv",
+    "wf_seqkit.docker": "dbest/seqkit:v2.10.0",
+    "wf_seqkit.skip_err": false,
+    "wf_seqkit.skip_file_check": false,
+    "wf_seqkit.tabular": true,
+    "wf_seqkit.threads": 4,
+    "wf_seqkit.use_basename": true
 }

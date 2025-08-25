@@ -1,8 +1,8 @@
 version 1.0
 
-import "task_seqkit.wdl" as seqkit_task
+import "task_seqkit.wdl" as seqkit
 
-workflow seqkit_stats_workflow {
+workflow wf_seqkit {
   input {
     Array[File]+ input_file
     Boolean? all_stats
@@ -18,7 +18,7 @@ workflow seqkit_stats_workflow {
     Int threads
   }
 
-  call seqkit_task.seqkit_stats_task {
+  call seqkit.task_seqkit_stats {
     input:
     input_file = input_file,
     out_file = out_file,
@@ -35,6 +35,6 @@ workflow seqkit_stats_workflow {
   }
 
   output {
-    File seqkit_stats_result = seqkit_stats_task.stats_output
+    File seqkit_stats_result = task_seqkit_stats.stats_output
   }
 }

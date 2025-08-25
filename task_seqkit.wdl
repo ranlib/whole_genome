@@ -1,6 +1,6 @@
 version 1.0
 
-task seqkit_stats_task {
+task task_seqkit_stats {
   input {
     Array[File]+ input_file
     String out_file
