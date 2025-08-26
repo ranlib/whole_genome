@@ -32,3 +32,20 @@ seqkit_docu:
 run_seqkit:
 	miniwdl run --debug --dir test-seqkit --cfg miniwdl_production.cfg --input wf_seqkit.json wf_seqkit.wdl
 
+#
+# seqkit_seq
+#
+seqkit_seq:
+	womtool validate --inputs wf_seqkit_seq.json wf_seqkit_seq.wdl
+	miniwdl check wf_seqkit_seq.wdl
+
+seqkit_seq_docu:
+	wdl-aid wf_seqkit_seq.wdl -o wf_seqkit_seq.md
+	womtool graph wf_seqkit_seq.wdl > wf_seqkit_seq.dot
+	dot -Tpdf -o wf_seqkit_seq.pdf wf_seqkit_seq.dot
+	dot -Tjpeg -o wf_seqkit_seq.jpeg wf_seqkit_seq.dot
+	rm wf_seqkit_seq.dot
+
+run_seqkit_seq:
+	miniwdl run --debug --dir test-seqkit_seq --cfg miniwdl_production.cfg --input wf_seqkit_seq.json wf_seqkit_seq.wdl
+

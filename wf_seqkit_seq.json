@@ -1,0 +1,8 @@
+{
+    "wf_seqkit_seq.input_fastq": "data/ERR552797_30percent_1.fq.gz",
+    "wf_seqkit_seq.memory": "50GB",
+    "wf_seqkit_seq.threads": 12,
+    "wf_seqkit_seq.minimum_read_length": 50,
+    "wf_seqkit_seq.output_fastq": "ERR552797_30percent_50min_1.fq.gz",
+    "wf_seqkit_seq.docker": "dbest/seqkit:v2.10.0"
+}
