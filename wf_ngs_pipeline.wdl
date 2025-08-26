@@ -3,8 +3,8 @@ version 1.0
 import "task_fastqc.wdl" as fastqc
 import "task_fastp.wdl" as fastp
 import "task_samtools.wdl" as samtools
+import "task_seqkit.wdl" as seqkit
 import "wf_centrifuge.wdl" as centrifuge
-import "task_bbduk.wdl" as bbduk
 import "wf_minimap2.wdl" as minimap2
 import "wf_bam_metrics.wdl" as bam_metrics
 import "task_collect_wgs_metrics.wdl" as wgsQC
@@ -18,17 +18,24 @@ workflow wf_ngs_pipeline {
     Array[String]+ samplenames
     Array[File]+ references
     Map[String, String] dockerImages
-    # bbduk
+    # seqkit
+    Boolean all_stats = true
+    Boolean use_basename = true
+    String fq_encoding = "sanger"
+    String gap_letters = "'- .'"
+    Boolean skip_err = false
+    Boolean skip_file_check = false
+    Boolean tabular = true
+    String out_file = "stats.tsv"
+    # fastp
     File adapters
-    File phiX
-    File polyA
-    Int disk_size
     # minimap2
     Int threads
     String memory
     # centrifuge
     Array[File]+ indexFiles
     Int disk_multiplier
+    Int disk_size
     # bam metrics
     String outputDir = "."
     Boolean collectAlignmentSummaryMetrics = true
@@ -38,6 +45,22 @@ workflow wf_ngs_pipeline {
   }
 
   scatter ( indx in range(length(reads1)) ) {
+
+    call seqkit.task_seqkit_stats {
+      input:
+      input_file = [ reads1[indx], reads2[indx] ],
+      out_file = out_file,
+      all_stats = all_stats,
+      use_basename = use_basename,
+      fq_encoding = fq_encoding,
+      gap_letters = gap_letters,
+      skip_err = skip_err,
+      skip_file_check = skip_file_check,
+      tabular = tabular,
+      memory = memory,
+      threads = threads,
+      docker = dockerImages["seqkit"]
+    }
 
     call fastqc.task_fastqc {
       input:
@@ -53,29 +76,41 @@ workflow wf_ngs_pipeline {
       read1 = reads1[indx],
       read2 = reads2[indx],
       sample_id = samplenames[indx],
+      adapters = adapters,
       docker_image = dockerImages["fastp"],
       threads = threads,
       memory = memory
     }
-    
-    call bbduk.task_bbduk {
+
+    call seqkit.task_seqkit_stats as seqkit_after_cleanup {
+      input:
+      input_file = [ task_fastp.clean_read1, task_fastp.clean_read2 ],
+      out_file = out_file,
+      all_stats = all_stats,
+      use_basename = use_basename,
+      fq_encoding = fq_encoding,
+      gap_letters = gap_letters,
+      skip_err = skip_err,
+      skip_file_check = skip_file_check,
+      tabular = tabular,
+      memory = memory,
+      threads = threads,
+      docker = dockerImages["seqkit"]
+    }
+
+    call fastqc.task_fastqc as fastqc_after_cleanup {
+      input:
+      forwardReads = task_fastp.clean_read1,
+      reverseReads = task_fastp.clean_read2,
+      docker = dockerImages["fastqc"],
+      threads = threads,
+      memory = memory
+    }
+
+    call centrifuge.wf_centrifuge {
       input:
       read1 = task_fastp.clean_read1,
       read2 = task_fastp.clean_read2,
-      samplename = samplenames[indx],
-      adapters = adapters,
-      phiX = phiX,
-      polyA = polyA,
-      disk_size = disk_size,	
-      threads = threads,
-      memory = memory,
-      docker = dockerImages["bbduk"]
-    }
-    
-    call centrifuge.wf_centrifuge {
-      input:
-      read1 = task_bbduk.clean_read1,
-      read2 = task_bbduk.clean_read2,
       samplename = samplenames[indx],
       indexFiles = indexFiles,
       docker = dockerImages["centrifuge"],
@@ -87,8 +122,8 @@ workflow wf_ngs_pipeline {
       
     call minimap2.wf_minimap2 {
       input:
-      read1 = task_bbduk.clean_read1,
-      read2 = task_bbduk.clean_read2,
+      read1 = task_fastp.clean_read1,
+      read2 = task_fastp.clean_read2,
       reference = references[indx],
       samplename = samplenames[indx],
       threads = threads,
@@ -141,13 +176,12 @@ workflow wf_ngs_pipeline {
 
   }
   
-  Array[File] reports_fastq = flatten([ task_fastqc.forwardData, task_fastqc.reverseData, task_fastp.report_json])
-  Array[File] reports_bbduk = flatten([ task_bbduk.adapter_stats, task_bbduk.phiX_stats, task_bbduk.polyA_stats])
+  Array[File] reports_fastq = flatten([ task_fastqc.forwardData, task_fastqc.reverseData, fastqc_after_cleanup.forwardData, fastqc_after_cleanup.reverseData, task_fastp.report_json])
   Array[File] reports_centrifuge = flatten([wf_centrifuge.krakenStyleTSV])
   Array[File] reports_picard = flatten(wf_bam_metrics.picardMetricsFiles)
   Array[File] reports_bam   = flatten([ task_collect_wgs_metrics.collectMetricsOutput])
   Array[File?] reports_mosdepth = flatten([task_mosdepth.global_dist, task_mosdepth.regions_depth])
-  Array[File] allReports = select_all(flatten([ reports_bam, reports_picard, reports_centrifuge, reports_bbduk, reports_fastq]))
+  Array[File] allReports = select_all(flatten([ reports_mosdepth, reports_bam, reports_picard, reports_centrifuge, reports_fastq]))
   call multiqc.task_multiqc {
     input:
     inputFiles = allReports,
@@ -158,22 +192,21 @@ workflow wf_ngs_pipeline {
   }
   
   output {
+    # seqkit
+    Array[File] seqkit_stats_result = task_seqkit_stats.stats_output
+    Array[File] seqkit_stats_after_cleanup_result = seqkit_after_cleanup.stats_output
+    
     # fastqc
     Array[File] forwardHtml = task_fastqc.forwardHtml
     Array[File] reverseHtml = task_fastqc.reverseHtml
+    Array[File] forwardHtml_after_cleanup = fastqc_after_cleanup.forwardHtml
+    Array[File] reverseHtmt_after_cleanup = fastqc_after_cleanup.reverseHtml
 
     # fastp
     Array[File] fastp_clean_reads1 = task_fastp.clean_read1
     Array[File] fastp_clean_reads2 = task_fastp.clean_read2
     Array[File] reports_json = task_fastp.report_json
     Array[File] reports_html = task_fastp.report_html
-
-    # bbduk
-    Array[File] bbduk_clean_reads1 = task_bbduk.clean_read1
-    Array[File] bbduk_clean_reads2 = task_bbduk.clean_read2
-    Array[File] adapter_stats = task_bbduk.adapter_stats
-    Array[File] polyA_stats = task_bbduk.polyA_stats
-    Array[File] phiX_stats = task_bbduk.phiX_stats
 
     # centrifuge
     Array[File] centrifuge_classification = wf_centrifuge.classificationTSV

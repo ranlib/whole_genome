@@ -4,7 +4,6 @@
     "wf_ngs_pipeline.disk_multiplier": 20,
     "wf_ngs_pipeline.disk_size": 100,
     "wf_ngs_pipeline.dockerImages": {
-        "bbduk": "staphb/bbtools:39.26",
         "centrifuge": "dbest/centrifuge:v1.0.4.2",
         "fastp": "dbest/fastp:v1.0.1",
         "fastqc": "staphb/fastqc:0.12.1",
@@ -13,7 +12,8 @@
         "mosdepth": "brentp/mosdepth:v0.3.3",
         "multiqc": "multiqc/multiqc:v1.30",
         "picard": "quay.io/biocontainers/picard:3.4.0--hdfd78af_0",
-        "samtools": "dbest/samtools:v1.22.1"
+        "samtools": "dbest/samtools:v1.22.1",
+	"seqkit": "dbest/seqkit:v2.10.0"
     },
     "wf_ngs_pipeline.indexFiles": [
         "/home/dbest/data/centrifuge/hpvc.1.cf",
@@ -24,8 +24,6 @@
     "wf_ngs_pipeline.meanQualityByCycle": true,
     "wf_ngs_pipeline.memory": "256GB",
     "wf_ngs_pipeline.outputDir": ".",
-    "wf_ngs_pipeline.phiX": "/home/dbest/Software/whole_genome/contamination/phix174_ill.ref.fa.gz",
-    "wf_ngs_pipeline.polyA": "/home/dbest/Software/whole_genome/contamination/polyA.fa.gz",
     "wf_ngs_pipeline.reads1": [
         "data/ERR552797_30percent_1.fq.gz"
     ],
@@ -38,8 +36,6 @@
     "wf_ngs_pipeline.samplenames": [
         "ERR552797"
     ],
-    "wf_ngs_pipeline.task_bbduk.keep": true,
-    "wf_ngs_pipeline.task_bbduk.number_of_retries": 0,
     "wf_ngs_pipeline.task_collect_wgs_metrics.coverage_cap": 1000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minBaseQuality": 20,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minMappingQuality": 20,
