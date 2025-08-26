@@ -4,6 +4,7 @@ task task_fastp {
   input {
     File read1
     File read2
+    File adapters
     String sample_id
     String outprefix = sample_id
     String adapter_sequence = "AGATCGGAAGAGCACACGTC"
@@ -46,6 +47,7 @@ task task_fastp {
     -h ~{outprefix}.html \
     -a ~{adapter_sequence} \
     ~{if defined(read2) then '-A ' + adapter_sequence_r2 else ''} \
+    ~{if defined(adapters) then '--adapter_fasta' else ''} ~{adapters} \
     --thread ~{threads} \
     --trim_front1 ~{trim_front1} \
     --trim_tail1 ~{trim_tail1} \
