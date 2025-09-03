@@ -44,43 +44,43 @@ task task_seqkit_stats {
 }
 
 task task_seqkit_seq {
-    input {
-        File inputFile
-        Boolean? colorizeSequences
-        Boolean? complementSequence
-        Boolean? dnaToRna
-        String? gapLetters
-        Boolean? lowerCase
-        Int? maxLength
-        Float? maxQuality
-        Int? minLength
-        Float? minQuality
-        Boolean? onlyNames
-        Boolean? onlyId
-        Boolean? onlyQualities
-        Int? qualityAsciiBase
-        Boolean? removeGaps
-        Boolean? reverseSequence
-        Boolean? rnaToDna
-        Boolean? onlySequences
-        Boolean? upperCase
-        Boolean? validateSequence
-        Int? validateSequenceLength
-
-        # Global Flags
-        Int? alphabetGuessSeqLength
-        Int? compressLevel
-        Boolean? idNcbi
-        String? idRegexp
-        File? infileList
-        Int? lineWidth
-        String outFilePath 
-        Boolean? quiet
-        String? sequenceType
-      Int threads = 1
-      String  memory
-      String docker = "stjude/seqkit:2.1.0"
-    }
+  input {
+    File inputFile
+    Boolean? colorizeSequences
+    Boolean? complementSequence
+    Boolean? dnaToRna
+    String? gapLetters
+    Boolean? lowerCase
+    Int? maxLength
+    Float? maxQuality
+    Int? minLength
+    Float? minQuality
+    Boolean? onlyNames
+    Boolean? onlyId
+    Boolean? onlyQualities
+    Int? qualityAsciiBase
+    Boolean? removeGaps
+    Boolean? reverseSequence
+    Boolean? rnaToDna
+    Boolean? onlySequences
+    Boolean? upperCase
+    Boolean? validateSequence
+    Int? validateSequenceLength
+    
+    # Global Flags
+    Int? alphabetGuessSeqLength
+    Int? compressLevel
+    Boolean? idNcbi
+    String? idRegexp
+    File? infileList
+    Int? lineWidth
+    String outFilePath 
+    Boolean? quiet
+    String? sequenceType
+    Int threads = 1
+    String  memory
+    String docker = "dbest/seqkit:2.10.0"
+  }
 
     command <<<
       set -euxo pipefail
