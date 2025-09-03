@@ -41,8 +41,8 @@ task task_fastp {
     fastp \
     -i ~{read1} \
     ~{true=' -I ' false="" defined(read2)} ~{read2} \
-    -o ~{outprefix}.clean.1.fastq.gz \
-    ~{if defined(read2) && output_read2 then '-O ' + outprefix + '.clean.2.fastq.gz' else ''} \
+    -o ~{outprefix}_clean_1.fastq.gz \
+    ~{if defined(read2) && output_read2 then '-O ' + outprefix + '_clean_2.fastq.gz' else ''} \
     -j ~{outprefix}.json \
     -h ~{outprefix}.html \
     -a ~{adapter_sequence} \
@@ -75,8 +75,8 @@ task task_fastp {
   >>>
 
   output {
-    File clean_read1 = "${outprefix}.clean.1.fastq.gz"
-    File clean_read2 = "${outprefix}.clean.2.fastq.gz"
+    File clean_read1 = "${outprefix}_clean_1.fastq.gz"
+    File clean_read2 = "${outprefix}_clean_2.fastq.gz"
     File report_json = "${outprefix}.json"
     File report_html = "${outprefix}.html"
   }
