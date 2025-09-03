@@ -200,7 +200,7 @@ workflow wf_ngs_pipeline {
     Array[File] forwardHtml = task_fastqc.forwardHtml
     Array[File] reverseHtml = task_fastqc.reverseHtml
     Array[File] forwardHtml_after_cleanup = fastqc_after_cleanup.forwardHtml
-    Array[File] reverseHtmt_after_cleanup = fastqc_after_cleanup.reverseHtml
+    Array[File] reverseHtml_after_cleanup = fastqc_after_cleanup.reverseHtml
 
     # fastp
     Array[File] fastp_clean_reads1 = task_fastp.clean_read1
