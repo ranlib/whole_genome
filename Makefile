@@ -13,7 +13,7 @@ ngs_pipeline_docu:
 	rm wf_ngs_pipeline.dot
 
 run_ngs_pipeline:
-	miniwdl run --debug --dir test-ngs_pipeline --cfg miniwdl_production.cfg --input wf_ngs_pipeline.json wf_ngs_pipeline.wdl
+	time miniwdl run --debug --dir test-ngs_pipeline --cfg miniwdl_production.cfg --input wf_ngs_pipeline.json wf_ngs_pipeline.wdl
 
 #
 # seqkit
