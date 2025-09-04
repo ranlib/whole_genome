@@ -29,6 +29,7 @@ workflow wf_ngs_pipeline {
     String out_file = "stats.tsv"
     # fastp
     File adapters
+    Int minimum_read_length
     # minimap2
     Int threads
     String memory
@@ -71,11 +72,24 @@ workflow wf_ngs_pipeline {
       memory = memory
     }
     
+    call fastp.task_fastp as fastp_loose {
+      input:
+      read1 = reads1[indx],
+      read2 = reads2[indx],
+      sample_id = samplenames[indx],
+      minimum_read_length = 15,
+      adapters = adapters,
+      docker_image = dockerImages["fastp"],
+      threads = threads,
+      memory = memory
+    }
+
     call fastp.task_fastp {
       input:
       read1 = reads1[indx],
       read2 = reads2[indx],
       sample_id = samplenames[indx],
+      minimum_read_length = minimum_read_length,
       adapters = adapters,
       docker_image = dockerImages["fastp"],
       threads = threads,
@@ -176,7 +190,7 @@ workflow wf_ngs_pipeline {
 
   }
   
-  Array[File] reports_fastq = flatten([ task_fastqc.forwardData, task_fastqc.reverseData, fastqc_after_cleanup.forwardData, fastqc_after_cleanup.reverseData, task_fastp.report_json])
+  Array[File] reports_fastq = flatten([ task_fastqc.forwardData, task_fastqc.reverseData, fastqc_after_cleanup.forwardData, fastqc_after_cleanup.reverseData, task_fastp.report_json, fastp_loose.report_json])
   Array[File] reports_centrifuge = flatten([wf_centrifuge.krakenStyleTSV])
   Array[File] reports_picard = flatten(wf_bam_metrics.picardMetricsFiles)
   Array[File] reports_bam   = flatten([ task_collect_wgs_metrics.collectMetricsOutput])
@@ -205,8 +219,13 @@ workflow wf_ngs_pipeline {
     # fastp
     Array[File] fastp_clean_reads1 = task_fastp.clean_read1
     Array[File] fastp_clean_reads2 = task_fastp.clean_read2
-    Array[File] reports_json = task_fastp.report_json
-    Array[File] reports_html = task_fastp.report_html
+    Array[File] fastp_reports_json = task_fastp.report_json
+    Array[File] fastp_reports_html = task_fastp.report_html
+
+    Array[File] fastp_loose_clean_reads1 = fastp_loose.clean_read1
+    Array[File] fastp_loose_clean_reads2 = fastp_loose.clean_read2
+    Array[File] fastp_loose_reports_json = fastp_loose.report_json
+    Array[File] fastp_loose_reports_html = fastp_loose.report_html
 
     # centrifuge
     Array[File] centrifuge_classification = wf_centrifuge.classificationTSV
