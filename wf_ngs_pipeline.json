@@ -55,7 +55,7 @@
     "wf_ngs_pipeline.task_fastp.low_complexity_filter": 0,
     "wf_ngs_pipeline.task_fastp.merge_pe": false,
     "wf_ngs_pipeline.task_fastp.minimum_base_quality": 20,
-    "wf_ngs_pipeline.task_fastp.minimum_read_length": 50,
+    "wf_ngs_pipeline.minimum_read_length": 50,
     "wf_ngs_pipeline.task_fastp.n_base_limit": 5,
     "wf_ngs_pipeline.task_fastp.output_read1": true,
     "wf_ngs_pipeline.task_fastp.output_read2": true,
