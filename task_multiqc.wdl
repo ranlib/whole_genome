@@ -1,5 +1,8 @@
 version 1.0
 
+#File? config_file 
+#~{if defined(config_file) then "--config " else "" } ~{config_file} \
+
 task task_multiqc {
   input {
     Array[File] inputFiles
@@ -18,7 +21,8 @@ task task_multiqc {
     echo "<W> multiqc: $file does not exist!"
     fi
     done
-    multiqc --force --no-data-dir --filename ~{outputPrefix} .
+    multiqc --force --no-data-dir \
+    --filename ~{outputPrefix} .
   >>>
 
   output {
