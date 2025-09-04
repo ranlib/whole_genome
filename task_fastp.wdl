@@ -36,6 +36,8 @@ task task_fastp {
     String memory = "32GB"
   }
 
+  #  ~{if defined(read2) then '-A ' + adapter_sequence_r2 else ''} \
+  #  ~{if defined(adapters) then '--adapter_fasta' else ''} ~{adapters} \
   command <<<
     set -euxo pipefail
     fastp \
@@ -46,14 +48,12 @@ task task_fastp {
     -j ~{outprefix}.json \
     -h ~{outprefix}.html \
     -a ~{adapter_sequence} \
-    ~{if defined(read2) then '-A ' + adapter_sequence_r2 else ''} \
-    ~{if defined(adapters) then '--adapter_fasta' else ''} ~{adapters} \
     --thread ~{threads} \
     --trim_front1 ~{trim_front1} \
     --trim_tail1 ~{trim_tail1} \
+    ~{if defined(read2) then '--trim_front2 ' + trim_front2 else ''} \
+    ~{if defined(read2) then '--trim_tail2 ' + trim_tail2 else ''} \
     --length_required ~{minimum_read_length} \
-    ~{if defined(read2) then '-F ' + trim_front2 else ''} \
-    ~{if defined(read2) then '-T ' + trim_tail2 else ''} \
     ~{if cutadapt_compatible then '--cutadapt_compatible' else ''} \
     ~{if umi then '--umi' else ''} \
     ~{if umi then '--umi_loc ' + umi_loc else ''} \
@@ -70,7 +70,7 @@ task task_fastp {
     ~{if merge_pe then '--merge_pe' else ''} \
     ~{if !output_read1 then '--dont_output_read1' else ''} \
     ~{if defined(read2) && !output_read2 then '--dont_output_read2' else ''} \
-    --detect_adapter_for_pe \
+    ~{if defined(read2) then '--detect_adapter_for_pe' else ''} \
     ~{extra_options}
   >>>
 
