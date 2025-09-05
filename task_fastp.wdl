@@ -25,6 +25,8 @@ task task_fastp {
     Int low_complexity_filter = 0
     Int complexity_threshold = 40
     Int minimum_read_length = 15
+    Int poly_g_min_len = 10
+    Int poly_x_min_len = 10
     Boolean filter_by_index = false
     Boolean correction = false
     Boolean proper_pairs_only = false
@@ -40,6 +42,7 @@ task task_fastp {
   #  ~{if defined(adapters) then '--adapter_fasta' else ''} ~{adapters} \
   command <<<
     set -euxo pipefail
+    mkdir -p $(dirname ~{outprefix})
     fastp \
     -i ~{read1} \
     ~{true=' -I ' false="" defined(read2)} ~{read2} \
@@ -53,6 +56,10 @@ task task_fastp {
     --trim_tail1 ~{trim_tail1} \
     ~{if defined(read2) then '--trim_front2 ' + trim_front2 else ''} \
     ~{if defined(read2) then '--trim_tail2 ' + trim_tail2 else ''} \
+    --trim_poly_g \
+    --poly_g_min_len ~{poly_g_min_len} \
+    --trim_poly_x \
+    --poly_x_min_len ~{poly_x_min_len} \
     --length_required ~{minimum_read_length} \
     ~{if cutadapt_compatible then '--cutadapt_compatible' else ''} \
     ~{if umi then '--umi' else ''} \
