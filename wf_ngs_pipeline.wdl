@@ -76,7 +76,7 @@ workflow wf_ngs_pipeline {
       input:
       read1 = reads1[indx],
       read2 = reads2[indx],
-      sample_id = samplenames[indx],
+      sample_id = "fastp_loose_" + samplenames[indx],
       minimum_read_length = 15,
       adapters = adapters,
       docker_image = dockerImages["fastp"],
@@ -88,7 +88,7 @@ workflow wf_ngs_pipeline {
       input:
       read1 = reads1[indx],
       read2 = reads2[indx],
-      sample_id = samplenames[indx],
+      sample_id = "fastp_" + samplenames[indx],
       minimum_read_length = minimum_read_length,
       adapters = adapters,
       docker_image = dockerImages["fastp"],
