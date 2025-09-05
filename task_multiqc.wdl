@@ -1,11 +1,9 @@
 version 1.0
 
-#File? config_file 
-#~{if defined(config_file) then "--config " else "" } ~{config_file} \
-
 task task_multiqc {
   input {
     Array[File] inputFiles
+    File? config_file 
     String outputPrefix
     String docker = "multiqc/multiqc:v1.30"
     String memory = "8GB"
@@ -16,12 +14,14 @@ task task_multiqc {
     set -euxo
     for file in ~{sep=' ' inputFiles}; do
     if [ -e $file ] ; then
-    cp -r $file .
+       cp -r $file .
+       ls -l 
     else
-    echo "<W> multiqc: $file does not exist!"
+       echo "<W> multiqc: $file does not exist!"
     fi
     done
     multiqc --force --no-data-dir \
+    ~{if defined(config_file) then "--config " else "" } ~{config_file} \
     --filename ~{outputPrefix} .
   >>>
 
