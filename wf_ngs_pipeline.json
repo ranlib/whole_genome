@@ -36,6 +36,7 @@
     "wf_ngs_pipeline.samplenames": [
         "ERR552797"
     ],
+    "wf_ngs_pipeline.task_multiqc.config_file": "/home/dbest/Software/whole_genome/multiqc_config.yaml",
     "wf_ngs_pipeline.task_collect_wgs_metrics.coverage_cap": 1000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minBaseQuality": 20,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minMappingQuality": 20,
