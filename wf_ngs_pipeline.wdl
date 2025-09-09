@@ -9,6 +9,11 @@ import "wf_minimap2.wdl" as minimap2
 import "wf_bam_metrics.wdl" as bam_metrics
 import "task_collect_wgs_metrics.wdl" as wgsQC
 import "wf_mosdepth.wdl" as mosdepth
+import "wf_gatk.wdl" as gatk
+import "task_delly.wdl" as delly
+import "task_concat_2_vcfs.wdl" as concat
+import "task_snpEff.wdl" as snpEff
+
 import "task_multiqc.wdl" as multiqc
 
 workflow wf_ngs_pipeline {
@@ -43,6 +48,16 @@ workflow wf_ngs_pipeline {
     Boolean meanQualityByCycle = true
     Array[File]+? targetIntervals
     File? ampliconIntervals
+    # gatk
+    Int min_reads_per_strand
+    Int min_median_read_position
+    Float min_allele_fraction
+    # snpEff
+    String genome
+    File dataDir
+    File config
+    # concat vcfs
+    String output_vcf_name = "all_variants.vcf"
   }
 
   scatter ( indx in range(length(reads1)) ) {
@@ -188,6 +203,49 @@ workflow wf_ngs_pipeline {
       docker = dockerImages["mosdepth"]
     }
 
+    call gatk.wf_gatk {
+      input:
+      inputBams = [wf_minimap2.bam],
+      inputBamsIndex = [wf_minimap2.bai],
+      intervals = targetIntervals,
+      referenceFasta = references[indx],
+      referenceFastaDict = DictAndFaidx.outputFastaDict,
+      referenceFastaFai = DictAndFaidx.outputFastaFai,
+      min_reads_per_strand =  min_reads_per_strand,
+      min_median_read_position = min_median_read_position,
+      min_allele_fraction =  min_allele_fraction,
+      outputVcf = sub(basename(wf_minimap2.bam),".bam",".vcf"),
+      outputAlignedVcf = sub(basename(wf_minimap2.bam),".bam","_aligned.vcf"),
+      outputFilteredVcf = sub(basename(wf_minimap2.bam),".bam","_filtered.vcf"),
+      memory = memory,
+      javaXmx = memory,
+      docker = dockerImages["gatk"]
+    }
+    
+    call delly.task_delly {
+      input:
+      bamFile = wf_minimap2.bam,
+      bamIndex = wf_minimap2.bai,
+      reference = references[indx]
+    }
+    
+    if (defined(task_delly.vcfFile)) {
+      call concat.task_concat_2_vcfs {
+	input:
+	vcf1 = wf_gatk.vcfFilteredFile,
+	vcf2 = select_first([task_delly.vcfFile]),
+	output_vcf_name = output_vcf_name
+      }
+    }
+    
+    call snpEff.task_snpEff {
+      input:
+      vcf = select_first([task_concat_2_vcfs.concatenated_vcf,wf_gatk.vcfFilteredFile]),
+      genome = genome,
+      config = config,
+      dataDir = dataDir
+    }
+    
   }
   
   Array[File] reports_fastq = flatten([ task_fastqc.forwardData, task_fastqc.reverseData, fastqc_after_cleanup.forwardData, fastqc_after_cleanup.reverseData, task_fastp.report_json, fastp_loose.report_json])
@@ -195,6 +253,7 @@ workflow wf_ngs_pipeline {
   Array[File] reports_picard = flatten(wf_bam_metrics.picardMetricsFiles)
   Array[File] reports_bam   = flatten([ task_collect_wgs_metrics.collectMetricsOutput])
   Array[File?] reports_mosdepth = flatten([task_mosdepth.global_dist, task_mosdepth.regions_depth])
+  #Array[File] reports_snpEff = flatten([task_snpEff.snpEff_summary_full,  task_snpEff.snpEff_summary_targets])
   Array[File] allReports = select_all(flatten([ reports_mosdepth, reports_bam, reports_picard, reports_centrifuge, reports_fastq]))
   call multiqc.task_multiqc {
     input:
@@ -250,6 +309,23 @@ workflow wf_ngs_pipeline {
     Array[File] coverage_summary = task_mosdepth.summary_output
     Array[File] coverage_global_dist = task_mosdepth.global_dist
     Array[File?] coverage_regions_depth = task_mosdepth.regions_depth
+
+    # output from variant calling
+    Array[File?] vcf = wf_gatk.vcfFile
+    Array[File?] vcfIndex = wf_gatk.vcfFileIndex
+    Array[File?] vcfStats = wf_gatk.vcfFileStats
+    Array[File?] vcfAligned = wf_gatk.vcfAlignedFile
+    Array[File?] vcfAlignedIndex = wf_gatk.vcfAlignedFileIndex
+    Array[File?] vcfFiltered = wf_gatk.vcfFilteredFile
+    Array[File?] vcfFilteredIndex = wf_gatk.vcfFilteredFileIndex
+    Array[File?] vcfFilteredStats = wf_gatk.vcfFilteredFileStats
+
+    # output from delly
+    Array[File?] dellyVcf = task_delly.vcfFile
+    Array[File?] vcf_concatenated = task_concat_2_vcfs.concatenated_vcf
+
+    # snpEff
+    Array[File?] vcfAnnotated = task_snpEff.outputVcf
 
     # multiqc
     File report = task_multiqc.report

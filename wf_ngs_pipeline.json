@@ -69,5 +69,11 @@
     "wf_ngs_pipeline.task_fastp.umi_len": 0,
     "wf_ngs_pipeline.task_fastp.umi_loc": "read1",
     "wf_ngs_pipeline.task_fastp.unqualified_percent_limit": 40,
-    "wf_ngs_pipeline.threads": 32
+    "wf_ngs_pipeline.threads": 32,
+    "wf_ngs_pipeline.min_allele_fraction": 0.01,
+    "wf_ngs_pipeline.min_median_read_position": 1,
+    "wf_ngs_pipeline.min_reads_per_strand": 1,
+    "wf_ngs_pipeline.config": "/home/dieterbest/Analysis/varpipe4/snpEff_database/snpEff.config",
+    "wf_ngs_pipeline.dataDir": "/home/dieterbest/Analysis/varpipe4/snpEff_database/snpEff.zip",
+    "wf_ngs_pipeline.genome": "NC_000962.3"
 }
