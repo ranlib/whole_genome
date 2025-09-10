@@ -2,15 +2,21 @@
 #shopt -s expand_aliases
 #alias snpEff="java -jar $HOME/Software/snpEff/snpEff.jar"
 
-# acinto
+# acineto
 ORG=NZ_CP045110.1
 GFF=../references/acineto/GCF_009035845.1_ASM903584v1_genomic.gff
 FAS=../references/acineto/GCF_009035845.1_ASM903584v1_genomic.fna
+CDS=../references/acineto/GCF_009035845.1_ASM903584v1_cds_from_genomic.fna
+FAA=../references/acineto/GCF_009035845.1_ASM903584v1_protein.faa
+#CDS=../references/acineto/GCF_009035845.1_ASM903584v1_translated_cds.faa
 
 # pseudomonas
-ORG=NC_021505.1
-GFF=../references/pseudomonas/GCF_000412675.1_ASM41267v1_genomic.gff
-FAS=../references/pseudomonas/GCF_000412675.1_ASM41267v1_genomic.fna
+#ORG=NC_021505.1
+#GFF=../references/pseudomonas/GCF_000412675.1_ASM41267v1_genomic.gff
+#FAS=../references/pseudomonas/GCF_000412675.1_ASM41267v1_genomic.fna
+##CDS=../references/pseudomonas/GCF_000412675.1_ASM41267v1_translated_cds.faa
+#CDS=../references/pseudomonas/GCF_000412675.1_ASM41267v1_cds_from_genomic.fna
+#FAA=../references/pseudomonas/GCF_000412675.1_ASM41267v1_protein.faa
 
 # shigella
 #ORG=NC_016822.1
@@ -24,25 +30,31 @@ FAS=../references/pseudomonas/GCF_000412675.1_ASM41267v1_genomic.fna
 #ORG=NC_003197.2
 #FAS=../references/salmonella/GCF_000006945.2_ASM694v2_genomic.fna
 #GFF=../references/salmonella/GCF_000006945.2_ASM694v2_genomic.gff
+#CDS=../references/salmonella/GCF_000006945.2_ASM694v2_cds_from_genomic.fna
+##CDS=../references/salmonella/GCF_000006945.2_ASM694v2_translated_cds.faa
+#FAA=../references/salmonella/GCF_000006945.2_ASM694v2_protein.faa
 
 # legionella
 #ORG=NZ_CP071527.1
 #GFF=../references/legionella/GCF_023921225.1_ASM2392122v1_genomic.gff
 #FAS=../references/legionella/GCF_023921225.1_ASM2392122v1_genomic.fna
-ORG=NZ_CP013742.1
-CDS=../references/legionella/GCF_001941585.1_ASM194158v1_cds_from_genomic.fna
-#CDS=../references/legionella/GCF_001941585.1_ASM194158v1_translated_cds.faa
-FAS=../references/legionella/GCF_001941585.1_ASM194158v1_genomic.fna
-GFF=../references/legionella/GCF_001941585.1_ASM194158v1_genomic.gff
-FAA=../references/legionella/GCF_001941585.1_ASM194158v1_protein.faa
+#ORG=NZ_CP013742.1
+#CDS=../references/legionella/GCF_001941585.1_ASM194158v1_cds_from_genomic.fna
+##CDS=../references/legionella/GCF_001941585.1_ASM194158v1_translated_cds.faa
+#FAS=../references/legionella/GCF_001941585.1_ASM194158v1_genomic.fna
+#GFF=../references/legionella/GCF_001941585.1_ASM194158v1_genomic.gff
+#FAA=../references/legionella/GCF_001941585.1_ASM194158v1_protein.faa
 
 # listeria
 #ORG=NZ_CP117229.1
 #GFF=../references/listeria/GCF_028596125.1_ASM2859612v1_genomic.gff
 #FAS=../references/listeria/GCF_028596125.1_ASM2859612v1_genomic.fna
+#FAA=../references/listeria/GCF_028596125.1_ASM2859612v1_protein.faa
+#CDS=../references/listeria/GCF_028596125.1_ASM2859612v1_cds_from_genomic.fna
+##CDS=../references/listeria/GCF_028596125.1_ASM2859612v1_translated_cds.faa
 
 # ecoli
-ORG=NC_000913.3
+#ORG=NC_000913.3
 #GFF=../references/ecoli/GCF_000005845.2_ASM584v2_genomic.gff
 #FAS=../references/ecoli/GCF_000005845.2_ASM584v2_genomic.fna
 #FAA=../references/ecoli/GCF_000005845.2_ASM584v2_protein.faa
