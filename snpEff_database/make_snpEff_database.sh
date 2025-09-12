@@ -13,6 +13,21 @@ DB=$PWD/data
 # add organisms
 #
 
+# tb
+ORG=NC_000962.3
+CDS=../references/tb/GCF_000195955.2_ASM19595v2_cds_from_genomic.fna
+FAS=../references/tb/GCF_000195955.2_ASM19595v2_genomic.fna
+GFF=../references/tb/GCF_000195955.2_ASM19595v2_genomic.gff
+#CDS=../references/tb/GCF_000195955.2_ASM19595v2_translated_cds.faa
+FAA=../references/tb/GCF_000195955.2_ASM19595v2_protein.faa
+mkdir -p $DB/$ORG
+cp $GFF $DB/$ORG/genes.gff
+cp $FAS $DB/$ORG/sequences.fa
+cp $FAA $DB/$ORG/protein.fa
+cp $CDS $DB/$ORG/cds.fa
+echo "${ORG}.genome: ${ORG}" >> snpEff.config
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+
 # acineto
 ORG=NZ_CP045110.1
 GFF=../references/acineto/GCF_009035845.1_ASM903584v1_genomic.gff
