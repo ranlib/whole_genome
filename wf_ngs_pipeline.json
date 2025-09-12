@@ -1,6 +1,8 @@
 {
     "wf_ngs_pipeline.adapters": "/home/dbest/Software/whole_genome/contamination/adapters.fa.gz",
     "wf_ngs_pipeline.collectAlignmentSummaryMetrics": true,
+    "wf_ngs_pipeline.config": "/home/dbest/Software/whole_genome/snpEff_database/snpEff.config",
+    "wf_ngs_pipeline.dataDir": "/home/dbest/Software/whole_genome/snpEff_database/snpEff.zip",
     "wf_ngs_pipeline.disk_multiplier": 20,
     "wf_ngs_pipeline.disk_size": 100,
     "wf_ngs_pipeline.dockerImages": {
@@ -10,11 +12,39 @@
         "gatk": "broadinstitute/gatk:4.6.2.0",
         "minimap": "staphb/minimap2:2.29",
         "mosdepth": "brentp/mosdepth:v0.3.3",
-        "multiqc": "multiqc/multiqc:v1.30",
+        "multiqc": "multiqc/multiqc:v1.31",
         "picard": "quay.io/biocontainers/picard:3.4.0--hdfd78af_0",
         "samtools": "dbest/samtools:v1.22.1",
-	"seqkit": "dbest/seqkit:v2.10.0"
+        "seqkit": "dbest/seqkit:v2.10.0",
+	"snpeff": "dbest/snpeff:v5.3a"
     },
+    "wf_ngs_pipeline.fastp_tight.adapter_sequence": "AGATCGGAAGAGCACACGTC",
+    "wf_ngs_pipeline.fastp_tight.adapter_sequence_r2": "AGATCGGAAGAGCGTCGTGTAGGAAAGAGTG",
+    "wf_ngs_pipeline.fastp_tight.complexity_threshold": 40,
+    "wf_ngs_pipeline.fastp_tight.correction": false,
+    "wf_ngs_pipeline.fastp_tight.cutadapt_compatible": false,
+    "wf_ngs_pipeline.fastp_tight.disable_quality_filtering": false,
+    "wf_ngs_pipeline.fastp_tight.extra_options": "",
+    "wf_ngs_pipeline.fastp_tight.filter_by_index": false,
+    "wf_ngs_pipeline.fastp_tight.low_complexity_filter": 0,
+    "wf_ngs_pipeline.fastp_tight.merge_pe": false,
+    "wf_ngs_pipeline.fastp_tight.minimum_base_quality": 20,
+    "wf_ngs_pipeline.fastp_tight.n_base_limit": 5,
+    "wf_ngs_pipeline.fastp_tight.output_read1": true,
+    "wf_ngs_pipeline.fastp_tight.output_read2": true,
+    "wf_ngs_pipeline.fastp_tight.proper_pairs_only": false,
+    "wf_ngs_pipeline.fastp_tight.trim_front1": 0,
+    "wf_ngs_pipeline.fastp_tight.trim_front2": 0,
+    "wf_ngs_pipeline.fastp_tight.trim_tail1": 0,
+    "wf_ngs_pipeline.fastp_tight.trim_tail2": 0,
+    "wf_ngs_pipeline.fastp_tight.umi": false,
+    "wf_ngs_pipeline.fastp_tight.umi_len": 0,
+    "wf_ngs_pipeline.fastp_tight.umi_loc": "read1",
+    "wf_ngs_pipeline.fastp_tight.unqualified_percent_limit": 40,
+    "wf_ngs_pipeline.genomes": [
+        "NC_000962.3",
+        "NC_000962.3"
+    ],
     "wf_ngs_pipeline.indexFiles": [
         "/home/dbest/data/centrifuge/hpvc.1.cf",
         "/home/dbest/data/centrifuge/hpvc.2.cf",
@@ -23,20 +53,27 @@
     ],
     "wf_ngs_pipeline.meanQualityByCycle": true,
     "wf_ngs_pipeline.memory": "256GB",
+    "wf_ngs_pipeline.min_allele_fraction": 0.01,
+    "wf_ngs_pipeline.min_median_read_position": 1,
+    "wf_ngs_pipeline.min_reads_per_strand": 1,
+    "wf_ngs_pipeline.minimum_read_length": 50,
     "wf_ngs_pipeline.outputDir": ".",
     "wf_ngs_pipeline.reads1": [
-        "data/ERR552797_30percent_1.fq.gz"
+        "data/ERR552797_30percent_1.fq.gz",
+        "data/ERR552797-15percent_1.fq.gz"
     ],
     "wf_ngs_pipeline.reads2": [
-        "data/ERR552797_30percent_2.fq.gz"
+        "data/ERR552797_30percent_2.fq.gz",
+        "data/ERR552797-15percent_2.fq.gz"
     ],
     "wf_ngs_pipeline.references": [
+        "/home/dbest/Software/whole_genome/references/NC_000962.3/NC_000962.3.fasta",
         "/home/dbest/Software/whole_genome/references/NC_000962.3/NC_000962.3.fasta"
     ],
     "wf_ngs_pipeline.samplenames": [
-        "ERR552797"
+        "ERR552797-30percent",
+        "ERR552797-15percent"
     ],
-    "wf_ngs_pipeline.task_multiqc.config_file": "/home/dbest/Software/whole_genome/multiqc_config.yaml",
     "wf_ngs_pipeline.task_collect_wgs_metrics.coverage_cap": 1000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minBaseQuality": 20,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minMappingQuality": 20,
@@ -45,35 +82,6 @@
     "wf_ngs_pipeline.task_collect_wgs_metrics.sample_size": 10000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.sensitivityFile": "collect_wgs_sensitivity_metrics.txt",
     "wf_ngs_pipeline.task_collect_wgs_metrics.use_fast_algorithm": true,
-    "wf_ngs_pipeline.task_fastp.adapter_sequence": "AGATCGGAAGAGCACACGTC",
-    "wf_ngs_pipeline.task_fastp.adapter_sequence_r2": "AGATCGGAAGAGCGTCGTGTAGGAAAGAGTG",
-    "wf_ngs_pipeline.task_fastp.complexity_threshold": 40,
-    "wf_ngs_pipeline.task_fastp.correction": false,
-    "wf_ngs_pipeline.task_fastp.cutadapt_compatible": false,
-    "wf_ngs_pipeline.task_fastp.disable_quality_filtering": false,
-    "wf_ngs_pipeline.task_fastp.extra_options": "",
-    "wf_ngs_pipeline.task_fastp.filter_by_index": false,
-    "wf_ngs_pipeline.task_fastp.low_complexity_filter": 0,
-    "wf_ngs_pipeline.task_fastp.merge_pe": false,
-    "wf_ngs_pipeline.task_fastp.minimum_base_quality": 20,
-    "wf_ngs_pipeline.minimum_read_length": 50,
-    "wf_ngs_pipeline.task_fastp.n_base_limit": 5,
-    "wf_ngs_pipeline.task_fastp.output_read1": true,
-    "wf_ngs_pipeline.task_fastp.output_read2": true,
-    "wf_ngs_pipeline.task_fastp.proper_pairs_only": false,
-    "wf_ngs_pipeline.task_fastp.trim_front1": 0,
-    "wf_ngs_pipeline.task_fastp.trim_front2": 0,
-    "wf_ngs_pipeline.task_fastp.trim_tail1": 0,
-    "wf_ngs_pipeline.task_fastp.trim_tail2": 0,
-    "wf_ngs_pipeline.task_fastp.umi": false,
-    "wf_ngs_pipeline.task_fastp.umi_len": 0,
-    "wf_ngs_pipeline.task_fastp.umi_loc": "read1",
-    "wf_ngs_pipeline.task_fastp.unqualified_percent_limit": 40,
-    "wf_ngs_pipeline.threads": 32,
-    "wf_ngs_pipeline.min_allele_fraction": 0.01,
-    "wf_ngs_pipeline.min_median_read_position": 1,
-    "wf_ngs_pipeline.min_reads_per_strand": 1,
-    "wf_ngs_pipeline.config": "/home/dieterbest/Analysis/varpipe4/snpEff_database/snpEff.config",
-    "wf_ngs_pipeline.dataDir": "/home/dieterbest/Analysis/varpipe4/snpEff_database/snpEff.zip",
-    "wf_ngs_pipeline.genome": "NC_000962.3"
+    "wf_ngs_pipeline.task_multiqc.config_file": "/home/dbest/Software/whole_genome/multiqc_config.yaml",
+    "wf_ngs_pipeline.threads": 32
 }
