@@ -5,18 +5,18 @@ task task_snpEff {
       File vcf
       File config
       File dataDir
-      String genome
-      String outputPath = "./snpeff.vcf"
       Boolean hgvs = true
       Boolean lof = true
       Boolean noDownstream = false
       Boolean noIntergenic = false
       Boolean noShiftHgvs = false
       Int? upDownStreamLen
+      String genome
+      String outputPath = "./snpeff.vcf"
       String stats = "snpEff_summary.html"
       String csvStats = "snpEff_summary.csv"
-      String memory = "9G"
-      String docker = "dbest/snpeff:v5.2f"
+      String memory
+      String docker
     }
     
     command {
