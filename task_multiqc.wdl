@@ -8,6 +8,7 @@ task task_multiqc {
     String docker = "multiqc/multiqc:v1.30"
     String memory = "8GB"
     Int disk_size = 100
+    Boolean? pdf
   }
   
   command <<<
@@ -21,13 +22,14 @@ task task_multiqc {
     fi
     done
     multiqc --force --no-data-dir \
+    ~{if defined(pdf) then "--pdf --template 'simple' " else "" } \
     ~{if defined(config_file) then "--config " else "" } ~{config_file} \
     --filename ~{outputPrefix} .
   >>>
 
   output {
     File report = "${outputPrefix}.html"
-    #File report_pdf = "${outputPrefix}.pdf"
+    File? report_pdf = "${outputPrefix}.pdf"
   }
 
   runtime {
