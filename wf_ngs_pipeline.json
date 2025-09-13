@@ -60,19 +60,19 @@
     "wf_ngs_pipeline.outputDir": ".",
     "wf_ngs_pipeline.reads1": [
         "data/ERR552797_30percent_1.fq.gz",
-        "data/ERR552797-15percent_1.fq.gz"
+        "data/ERR552797_15percent_1.fq.gz"
     ],
     "wf_ngs_pipeline.reads2": [
         "data/ERR552797_30percent_2.fq.gz",
-        "data/ERR552797-15percent_2.fq.gz"
+        "data/ERR552797_15percent_2.fq.gz"
     ],
     "wf_ngs_pipeline.references": [
-        "/home/dbest/Software/whole_genome/references/NC_000962.3/NC_000962.3.fasta",
-        "/home/dbest/Software/whole_genome/references/NC_000962.3/NC_000962.3.fasta"
+        "/home/dbest/Software/whole_genome/references/tb/GCF_000195955.2_ASM19595v2_genomic.fna",
+        "/home/dbest/Software/whole_genome/references/tb/GCF_000195955.2_ASM19595v2_genomic.fna"
     ],
     "wf_ngs_pipeline.samplenames": [
-        "ERR552797-30percent",
-        "ERR552797-15percent"
+        "ERR552797_30percent",
+        "ERR552797_15percent"
     ],
     "wf_ngs_pipeline.task_collect_wgs_metrics.coverage_cap": 1000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minBaseQuality": 20,
