@@ -14,12 +14,11 @@ task task_multiqc {
   command <<<
     set -euxo
     for file in ~{sep=' ' inputFiles}; do
-    if [ -e $file ] ; then
-       cp -r $file .
-       ls -l 
-    else
-       echo "<W> multiqc: $file does not exist!"
-    fi
+       if [ -e $file ] ; then
+          cp $file .
+       else
+          echo "<W> multiqc: $file does not exist!"
+       fi
     done
     multiqc --force --no-data-dir \
     ~{if defined(pdf) then "--pdf --template 'simple' " else "" } \
