@@ -82,4 +82,26 @@ task task_fastqc {
   }
 }
 
-
+task FastQC {
+    input {
+        Array[File] fastqs
+        String prefix = "fastqc"
+        Int threads = 32
+    }
+    
+    command {
+        mkdir -p fastqc_out
+        fastqc --threads ~{threads} --outdir fastqc_out ~{sep=" " fastqs}
+    }
+    
+    output {
+        Array[File] html_reports = glob("fastqc_out/*_fastqc.html")
+        Array[File] zip_reports  = glob("fastqc_out/*_fastqc.zip")
+    }
+    
+    runtime {
+        docker: "staphb/fastqc:0.12.1"
+        cpu: 4
+        memory: "4G"
+    }
+}
