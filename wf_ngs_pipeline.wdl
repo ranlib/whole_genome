@@ -13,8 +13,13 @@ import "wf_gatk.wdl" as gatk
 import "task_delly.wdl" as delly
 import "task_concat_2_vcfs.wdl" as concat
 import "task_snpEff.wdl" as snpEff
-
 import "task_multiqc.wdl" as multiqc
+
+struct Sample {
+    String sample_id
+    File fastq_R1
+    File fastq_R2
+}
 
 workflow wf_ngs_pipeline {
   input {
@@ -63,30 +68,25 @@ workflow wf_ngs_pipeline {
   scatter ( indx in range(length(reads1)) ) {
 
     call seqkit.task_seqkit_stats as seqkit_stats_raw {
-      input:
-      input_file = [ reads1[indx], reads2[indx] ],
-      out_file = out_file,
-      all_stats = all_stats,
-      use_basename = use_basename,
-      fq_encoding = fq_encoding,
-      gap_letters = gap_letters,
-      skip_err = skip_err,
-      skip_file_check = skip_file_check,
-      tabular = tabular,
-      memory = memory,
-      threads = threads,
-      docker = dockerImages["seqkit"]
+        input:
+        input_file = [ reads1[indx], reads2[indx] ],
+        out_file = samplenames[indx] + "_" + out_file,
+        all_stats = all_stats,
+        use_basename = use_basename,
+        fq_encoding = fq_encoding,
+        gap_letters = gap_letters,
+        skip_err = skip_err,
+        skip_file_check = skip_file_check,
+        tabular = tabular,
+        memory = memory,
+        threads = threads,
+        docker = dockerImages["seqkit"]
     }
 
-    call fastqc.task_fastqc as fastqc_raw {
-      input:
-      forwardReads = reads1[indx],
-      reverseReads = reads2[indx],
-      docker = dockerImages["fastqc"],
-      threads = threads,
-      memory = memory
+    call fastqc.FastQC as fastqc_raw {
+        input: fastqs = [reads1[indx], reads2[indx]]
     }
-    
+ 
     call fastp.task_fastp as fastp_loose {
       input:
       read1 = reads1[indx],
@@ -114,7 +114,7 @@ workflow wf_ngs_pipeline {
     call seqkit.task_seqkit_stats as seqkit_after_cleanup {
       input:
       input_file = [ fastp_tight.clean_read1, fastp_tight.clean_read2 ],
-      out_file = out_file,
+      out_file = samplenames[indx] + "_" + out_file,
       all_stats = all_stats,
       use_basename = use_basename,
       fq_encoding = fq_encoding,
@@ -127,13 +127,8 @@ workflow wf_ngs_pipeline {
       docker = dockerImages["seqkit"]
     }
 
-    call fastqc.task_fastqc as fastqc_after_cleanup {
-      input:
-      forwardReads = fastp_tight.clean_read1,
-      reverseReads = fastp_tight.clean_read2,
-      docker = dockerImages["fastqc"],
-      threads = threads,
-      memory = memory
+    call fastqc.FastQC as fastqc_after_cleanup {
+        input: fastqs=[fastp_tight.clean_read1,fastp_tight.clean_read2]
     }
 
     call centrifuge.wf_centrifuge {
@@ -185,10 +180,12 @@ workflow wf_ngs_pipeline {
     
     call wgsQC.task_collect_wgs_metrics {
       input:
-      bam = wf_minimap2.bam,
-      reference = references[indx],
-      docker = dockerImages["gatk"],
-      memory = memory
+        bam = wf_minimap2.bam,
+        reference = references[indx],
+        outputFile = samplenames[indx] + "_collect_wgs_metrics.txt",
+        sensitivityFile = samplenames[indx] + "_collect_wgs_sensitivity_metrics.txt",
+        docker = dockerImages["gatk"],
+        memory = memory
     }
 
     call mosdepth.task_mosdepth {
@@ -230,12 +227,12 @@ workflow wf_ngs_pipeline {
     }
     
     if (defined(task_delly.vcfFile)) {
-      call concat.task_concat_2_vcfs {
-	input:
-	vcf1 = wf_gatk.vcfFilteredFile,
-	vcf2 = select_first([task_delly.vcfFile]),
-	output_vcf_name = samplenames[indx]  + "_all_variants.vcf"
-      }
+        call concat.task_concat_2_vcfs {
+	        input:
+	        vcf1 = wf_gatk.vcfFilteredFile,
+	        vcf2 = select_first([task_delly.vcfFile]),
+	        output_vcf_name = samplenames[indx]  + "_all_variants.vcf"
+        }
     }
     
     call snpEff.task_snpEff {
@@ -253,20 +250,34 @@ workflow wf_ngs_pipeline {
     
   }
   
-  Array[File] reports_fastq = flatten([ fastqc_raw.forwardData, fastqc_raw.reverseData, fastqc_after_cleanup.forwardData, fastqc_after_cleanup.reverseData, fastp_tight.report_json, fastp_loose.report_json])
-  Array[File] reports_centrifuge = flatten([wf_centrifuge.krakenStyleTSV])
-  Array[File] reports_picard = flatten(wf_bam_metrics.picardMetricsFiles)
-  Array[File] reports_bam   = flatten([ task_collect_wgs_metrics.collectMetricsOutput])
-  Array[File?] reports_mosdepth = flatten([task_mosdepth.global_dist, task_mosdepth.regions_depth])
-  Array[File] reports_snpEff = flatten([task_snpEff.snpEff_summary_csv])
-  Array[File] allReports = select_all(flatten([ reports_snpEff, reports_mosdepth, reports_bam, reports_picard, reports_centrifuge, reports_fastq]))
-  call multiqc.task_multiqc {
+  Array[File] reports_fastq_raw = flatten(fastqc_raw.zip_reports)
+  Array[File] reports_fastq_after_cleanup = flatten(fastqc_after_cleanup.zip_reports)
+  Array[File] reports_fastp_tight = flatten([fastp_tight.report_json])
+  Array[File] reports_fastp_loose = flatten([fastp_loose.report_json])
+  Array[File] reports_centrifuge  = flatten([wf_centrifuge.krakenStyleTSV])
+  Array[File] reports_picard      = flatten(wf_bam_metrics.picardMetricsFiles)
+  Array[File] reports_bam         = flatten([task_collect_wgs_metrics.collectMetricsOutput])
+  Array[File?] reports_mosdepth   = flatten([task_mosdepth.global_dist, task_mosdepth.regions_depth])
+  Array[File] reports_snpEff      = flatten([task_snpEff.snpEff_summary_csv])
+  Array[File] reports_seqkit_raw  = flatten([seqkit_stats_raw.stats_output])
+  Array[File] reports_seqkit_after_cleanup = flatten([seqkit_after_cleanup.stats_output])
+  call multiqc.task_multiqc_global {
     input:
-    inputFiles = allReports,
-    outputPrefix = "multiqc",
-    docker = dockerImages["multiqc"],
-    memory = memory,
-    disk_size = disk_size
+      reports_fastq_raw   = reports_fastq_raw,
+      reports_fastp_tight = reports_fastp_tight,
+      reports_fastp_loose = reports_fastp_loose,
+      reports_centrifuge  = reports_centrifuge,
+      reports_picard      = reports_picard,
+      reports_bam         = reports_bam,
+      reports_mosdepth    = reports_mosdepth,
+      reports_snpEff      = reports_snpEff,
+      reports_seqkit_raw  = reports_seqkit_raw,
+      reports_seqkit_after_cleanup = reports_seqkit_after_cleanup,
+      reports_fastq_after_cleanup = reports_fastq_after_cleanup,
+      outputPrefix = "multiqc",
+      docker = dockerImages["multiqc"],
+      memory = memory,
+      disk_size = disk_size
   }
   
   output {
@@ -275,23 +286,8 @@ workflow wf_ngs_pipeline {
     Array[File] seqkit_stats_after_cleanup_result = seqkit_after_cleanup.stats_output
     
     # fastqc
-    Array[File] forwardHtml_raw = fastqc_raw.forwardHtml
-    Array[File] reverseHtml_raw = fastqc_raw.reverseHtml
-    Array[File] forwardData_raw = fastqc_raw.forwardData
-    Array[File] reverseData_raw = fastqc_raw.reverseData
-    Array[File] forwardZip_raw = fastqc_raw.forwardZip
-    Array[File] reverseZip_raw = fastqc_raw.reverseZip
-    Array[File] forwardSummary_raw = fastqc_raw.forwardSummary
-    Array[File] reverseSummary_raw = fastqc_raw.reverseSummary
-    
-    Array[File] forwardHtml_after_cleanup = fastqc_after_cleanup.forwardHtml
-    Array[File] reverseHtml_after_cleanup = fastqc_after_cleanup.reverseHtml
-    Array[File] forwardData_after_cleanup = fastqc_after_cleanup.forwardData
-    Array[File] reverseData_after_cleanup = fastqc_after_cleanup.reverseData
-    Array[File] forwardZip_after_cleanup = fastqc_after_cleanup.forwardZip
-    Array[File] reverseZip_after_cleanup = fastqc_after_cleanup.reverseZip
-    Array[File] forwardSummary_after_cleanup = fastqc_after_cleanup.forwardSummary
-    Array[File] reverseSummary_after_cleanup = fastqc_after_cleanup.reverseSummary
+    #Array[File] fastqc_raw_inputs = fastqc_raw.zip_reports
+    #Array[File] fastqc_trimmed_reports = fastqc_after_cleanup.zip_reports
 
     # fastp
     Array[File] fastp_tight_clean_reads1 = fastp_tight.clean_read1
@@ -346,8 +342,8 @@ workflow wf_ngs_pipeline {
     Array[File?] vcfAnnotated = task_snpEff.outputVcf
 
     # multiqc
-    File report = task_multiqc.report
-    File? report_pdf = task_multiqc.report_pdf
+    File report = task_multiqc_global.report
+    #File? report_pdf = task_multiqc_global.report_pdf
   }
 
   meta {

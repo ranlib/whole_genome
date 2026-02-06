@@ -12,9 +12,9 @@
         "gatk": "broadinstitute/gatk:4.6.2.0",
         "minimap": "staphb/minimap2:2.29",
         "mosdepth": "brentp/mosdepth:v0.3.3",
-        "multiqc": "multiqc/multiqc:v1.31",
+        "multiqc": "multiqc/multiqc:v1.33",
         "picard": "quay.io/biocontainers/picard:3.4.0--hdfd78af_0",
-        "samtools": "dbest/samtools:v1.22.1",
+        "samtools": "dbest/samtools:v1.23",
         "seqkit": "dbest/seqkit:v2.10.0",
 	"snpeff": "dbest/snpeff:v5.3a"
     },
@@ -77,11 +77,9 @@
     "wf_ngs_pipeline.task_collect_wgs_metrics.coverage_cap": 1000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minBaseQuality": 20,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minMappingQuality": 20,
-    "wf_ngs_pipeline.task_collect_wgs_metrics.outputFile": "collect_wgs_metrics.txt",
     "wf_ngs_pipeline.task_collect_wgs_metrics.read_length": 150,
     "wf_ngs_pipeline.task_collect_wgs_metrics.sample_size": 10000,
-    "wf_ngs_pipeline.task_collect_wgs_metrics.sensitivityFile": "collect_wgs_sensitivity_metrics.txt",
     "wf_ngs_pipeline.task_collect_wgs_metrics.use_fast_algorithm": true,
-    "wf_ngs_pipeline.task_multiqc.config_file": "/home/dbest/Software/whole_genome/multiqc_config.yaml",
+    "wf_ngs_pipeline.task_multiqc_global.config_file": "/home/dbest/Software/whole_genome/multiqc_config.yaml",
     "wf_ngs_pipeline.threads": 32
 }
