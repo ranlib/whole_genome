@@ -16,7 +16,7 @@
         "picard": "quay.io/biocontainers/picard:3.4.0--hdfd78af_0",
         "samtools": "dbest/samtools:v1.23",
         "seqkit": "dbest/seqkit:v2.10.0",
-	"snpeff": "dbest/snpeff:v5.3a"
+	"snpeff": "dbest/snpeff:v5.4a"
     },
     "wf_ngs_pipeline.fastp_tight.adapter_sequence": "AGATCGGAAGAGCACACGTC",
     "wf_ngs_pipeline.fastp_tight.adapter_sequence_r2": "AGATCGGAAGAGCGTCGTGTAGGAAAGAGTG",

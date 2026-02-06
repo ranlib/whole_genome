@@ -26,7 +26,7 @@ cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # acineto
 ORG=NZ_CP045110.1
@@ -41,7 +41,7 @@ cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # pseudomonas
 ORG=NC_021505.1
@@ -56,7 +56,7 @@ cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # shigella
 ORG=NC_016822.1
@@ -71,7 +71,7 @@ cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # salmonella
 ORG=NC_003197.2
@@ -86,7 +86,7 @@ cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # legionella
 ##ORG=NZ_CP071527.1
@@ -105,7 +105,7 @@ cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # listeria
 ORG=NZ_CP117229.1
@@ -120,7 +120,7 @@ cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # ecoli
 #ORG=NC_000913.3
@@ -128,13 +128,21 @@ docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpE
 #FAS=../references/ecoli/GCF_000005845.2_ASM584v2_genomic.fna
 #FAA=../references/ecoli/GCF_000005845.2_ASM584v2_protein.faa
 #CDS=../references/ecoli/GCF_000005845.2_ASM584v2_cds_from_genomic.fna
+
+# klebsiella
+ORG=NC_016845.1
+FAA=../references/klebsiella/GCF_000240185.1_ASM24018v2_protein.faa
+GFF=../references/klebsiella/GCF_000240185.1_ASM24018v2_genomic.gff
+CDS=../references/klebsiella/GCF_000240185.1_ASM24018v2_cds_from_genomic.fna
+FAS=../references/klebsiella/GCF_000240185.1_ASM24018v2_genomic.fna
+
 mkdir -p $DB/$ORG
 cp $GFF $DB/$ORG/genes.gff
 cp $FAS $DB/$ORG/sequences.fa
 cp $FAA $DB/$ORG/protein.fa
 cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
-docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.3a snpEff build -noLog -c snpEff.config -gff3 $ORG
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 #
 # zip snpEff database
