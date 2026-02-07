@@ -63,6 +63,8 @@ workflow wf_ngs_pipeline {
     File config
     # concat vcfs
     String output_vcf_name = "all_variants.vcf"
+    # multiqc
+    File config_file 
   }
 
   scatter ( indx in range(length(reads1)) ) {
@@ -202,21 +204,21 @@ workflow wf_ngs_pipeline {
 
     call gatk.wf_gatk {
       input:
-      inputBams = [wf_minimap2.bam],
-      inputBamsIndex = [wf_minimap2.bai],
-      intervals = targetIntervals,
-      referenceFasta = references[indx],
-      referenceFastaDict = DictAndFaidx.outputFastaDict,
-      referenceFastaFai = DictAndFaidx.outputFastaFai,
-      min_reads_per_strand =  min_reads_per_strand,
-      min_median_read_position = min_median_read_position,
-      min_allele_fraction =  min_allele_fraction,
-      outputVcf = sub(basename(wf_minimap2.bam),".bam",".vcf"),
-      outputAlignedVcf = sub(basename(wf_minimap2.bam),".bam","_aligned.vcf"),
-      outputFilteredVcf = sub(basename(wf_minimap2.bam),".bam","_filtered.vcf"),
-      memory = memory,
-      javaXmx = "8G",
-      docker = dockerImages["gatk"]
+        inputBams = [wf_minimap2.bam],
+        inputBamsIndex = [wf_minimap2.bai],
+        intervals = targetIntervals,
+        referenceFasta = references[indx],
+        referenceFastaDict = DictAndFaidx.outputFastaDict,
+        referenceFastaFai = DictAndFaidx.outputFastaFai,
+        min_reads_per_strand =  min_reads_per_strand,
+        min_median_read_position = min_median_read_position,
+        min_allele_fraction =  min_allele_fraction,
+        outputVcf = sub(basename(wf_minimap2.bam),".bam",".vcf"),
+        outputAlignedVcf = sub(basename(wf_minimap2.bam),".bam","_aligned.vcf"),
+        outputFilteredVcf = sub(basename(wf_minimap2.bam),".bam","_filtered.vcf"),
+        memory = memory,
+        javaXmx = "8G",
+        docker = dockerImages["gatk"]
     }
     
     call delly.task_delly {
@@ -248,10 +250,28 @@ workflow wf_ngs_pipeline {
       docker = dockerImages["snpeff"]
     }
     
+    call multiqc.task_multiqc_global as multiqc_single {
+        input:
+        reports_fastq_raw   = fastqc_raw.zip_reports,
+        reports_fastp_tight = [fastp_tight.report_json],
+        reports_fastp_loose = [fastp_loose.report_json],
+        reports_centrifuge  = [wf_centrifuge.krakenStyleTSV],
+        reports_picard      = wf_bam_metrics.picardMetricsFiles,
+        reports_bam         = [task_collect_wgs_metrics.collectMetricsOutput],
+        reports_mosdepth    = [task_mosdepth.global_dist, task_mosdepth.regions_depth],
+        reports_snpEff      = [task_snpEff.snpEff_summary_csv],
+        reports_seqkit_raw  = [seqkit_stats_raw.stats_output],
+        reports_seqkit_after_cleanup = [seqkit_after_cleanup.stats_output],
+        reports_fastq_after_cleanup = fastqc_after_cleanup.zip_reports,
+        config_file = config_file,
+        outputPrefix = "multiqc",
+        docker = dockerImages["multiqc"],
+        memory = memory,
+        disk_size = disk_size
+    }
   }
   
-  Array[File] reports_fastq_raw = flatten(fastqc_raw.zip_reports)
-  Array[File] reports_fastq_after_cleanup = flatten(fastqc_after_cleanup.zip_reports)
+  Array[File] reports_fastq_raw   = flatten(fastqc_raw.zip_reports)
   Array[File] reports_fastp_tight = flatten([fastp_tight.report_json])
   Array[File] reports_fastp_loose = flatten([fastp_loose.report_json])
   Array[File] reports_centrifuge  = flatten([wf_centrifuge.krakenStyleTSV])
@@ -260,6 +280,7 @@ workflow wf_ngs_pipeline {
   Array[File?] reports_mosdepth   = flatten([task_mosdepth.global_dist, task_mosdepth.regions_depth])
   Array[File] reports_snpEff      = flatten([task_snpEff.snpEff_summary_csv])
   Array[File] reports_seqkit_raw  = flatten([seqkit_stats_raw.stats_output])
+  Array[File] reports_fastq_after_cleanup = flatten(fastqc_after_cleanup.zip_reports)
   Array[File] reports_seqkit_after_cleanup = flatten([seqkit_after_cleanup.stats_output])
   call multiqc.task_multiqc_global {
     input:
@@ -274,6 +295,7 @@ workflow wf_ngs_pipeline {
       reports_seqkit_raw  = reports_seqkit_raw,
       reports_seqkit_after_cleanup = reports_seqkit_after_cleanup,
       reports_fastq_after_cleanup = reports_fastq_after_cleanup,
+      config_file = config_file,
       outputPrefix = "multiqc",
       docker = dockerImages["multiqc"],
       memory = memory,
@@ -286,8 +308,8 @@ workflow wf_ngs_pipeline {
     Array[File] seqkit_stats_after_cleanup_result = seqkit_after_cleanup.stats_output
     
     # fastqc
-    #Array[File] fastqc_raw_inputs = fastqc_raw.zip_reports
-    #Array[File] fastqc_trimmed_reports = fastqc_after_cleanup.zip_reports
+    Array[Array[File]] fastqc_raw_inputs = fastqc_raw.zip_reports
+    Array[Array[File]] fastqc_trimmed_reports = fastqc_after_cleanup.zip_reports
 
     # fastp
     Array[File] fastp_tight_clean_reads1 = fastp_tight.clean_read1
@@ -344,6 +366,7 @@ workflow wf_ngs_pipeline {
     # multiqc
     File report = task_multiqc_global.report
     #File? report_pdf = task_multiqc_global.report_pdf
+    Array[File] reports_multiqc_single = multiqc_single.report
   }
 
   meta {

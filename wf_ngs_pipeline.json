@@ -2,6 +2,7 @@
     "wf_ngs_pipeline.adapters": "/home/dbest/Software/whole_genome/contamination/adapters.fa.gz",
     "wf_ngs_pipeline.collectAlignmentSummaryMetrics": true,
     "wf_ngs_pipeline.config": "/home/dbest/Software/whole_genome/snpEff_database/snpEff.config",
+    "wf_ngs_pipeline.config_file": "/home/dbest/Software/whole_genome/multiqc_config.yaml",
     "wf_ngs_pipeline.dataDir": "/home/dbest/Software/whole_genome/snpEff_database/snpEff.zip",
     "wf_ngs_pipeline.disk_multiplier": 20,
     "wf_ngs_pipeline.disk_size": 100,
@@ -80,6 +81,5 @@
     "wf_ngs_pipeline.task_collect_wgs_metrics.read_length": 150,
     "wf_ngs_pipeline.task_collect_wgs_metrics.sample_size": 10000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.use_fast_algorithm": true,
-    "wf_ngs_pipeline.task_multiqc_global.config_file": "/home/dbest/Software/whole_genome/multiqc_config.yaml",
     "wf_ngs_pipeline.threads": 32
 }
