@@ -136,6 +136,21 @@ GFF=../references/klebsiella/GCF_000240185.1_ASM24018v2_genomic.gff
 CDS=../references/klebsiella/GCF_000240185.1_ASM24018v2_cds_from_genomic.fna
 FAS=../references/klebsiella/GCF_000240185.1_ASM24018v2_genomic.fna
 
+# enterobacter
+ORG=NZ_AP022228.1
+CDS==../references/enterobacter/GCF_014169635.1_ASM1416963v1_cds_from_genomic.fna
+DAS==../references/enterobacter/GCF_014169635.1_ASM1416963v1_genomic.fna
+DFF==../references/enterobacter/GCF_014169635.1_ASM1416963v1_genomic.gff
+FAA=../references/enterobacter/GCF_014169635.1_ASM1416963v1_protein.faa
+
+# proteus
+ORG=NC_010554.1
+FAA=../references/proteus/GCF_000069965.1_ASM6996v1_protein.faa
+GFF=../references/proteus/GCF_000069965.1_ASM6996v1_genomic.gff
+FAS=../references/proteus/GCF_000069965.1_ASM6996v1_genomic.fna
+CDS=../references/proteus/GCF_000069965.1_ASM6996v1_cds_from_genomic.fna
+
+# make db
 mkdir -p $DB/$ORG
 cp $GFF $DB/$ORG/genes.gff
 cp $FAS $DB/$ORG/sequences.fa
