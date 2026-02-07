@@ -128,6 +128,14 @@ docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpE
 #FAS=../references/ecoli/GCF_000005845.2_ASM584v2_genomic.fna
 #FAA=../references/ecoli/GCF_000005845.2_ASM584v2_protein.faa
 #CDS=../references/ecoli/GCF_000005845.2_ASM584v2_cds_from_genomic.fna
+# make db
+#mkdir -p $DB/$ORG
+#cp $GFF $DB/$ORG/genes.gff
+#cp $FAS $DB/$ORG/sequences.fa
+#cp $FAA $DB/$ORG/protein.fa
+#cp $CDS $DB/$ORG/cds.fa
+#echo "${ORG}.genome: ${ORG}" >> snpEff.config
+#docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # klebsiella
 ORG=NC_016845.1
@@ -135,6 +143,14 @@ FAA=../references/klebsiella/GCF_000240185.1_ASM24018v2_protein.faa
 GFF=../references/klebsiella/GCF_000240185.1_ASM24018v2_genomic.gff
 CDS=../references/klebsiella/GCF_000240185.1_ASM24018v2_cds_from_genomic.fna
 FAS=../references/klebsiella/GCF_000240185.1_ASM24018v2_genomic.fna
+# make db
+mkdir -p $DB/$ORG
+cp $GFF $DB/$ORG/genes.gff
+cp $FAS $DB/$ORG/sequences.fa
+cp $FAA $DB/$ORG/protein.fa
+cp $CDS $DB/$ORG/cds.fa
+echo "${ORG}.genome: ${ORG}" >> snpEff.config
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # enterobacter
 ORG=NZ_AP022228.1
@@ -142,6 +158,14 @@ CDS==../references/enterobacter/GCF_014169635.1_ASM1416963v1_cds_from_genomic.fn
 DAS==../references/enterobacter/GCF_014169635.1_ASM1416963v1_genomic.fna
 DFF==../references/enterobacter/GCF_014169635.1_ASM1416963v1_genomic.gff
 FAA=../references/enterobacter/GCF_014169635.1_ASM1416963v1_protein.faa
+# make db
+mkdir -p $DB/$ORG
+cp $GFF $DB/$ORG/genes.gff
+cp $FAS $DB/$ORG/sequences.fa
+cp $FAA $DB/$ORG/protein.fa
+cp $CDS $DB/$ORG/cds.fa
+echo "${ORG}.genome: ${ORG}" >> snpEff.config
+docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 
 # proteus
 ORG=NC_010554.1
@@ -149,7 +173,6 @@ FAA=../references/proteus/GCF_000069965.1_ASM6996v1_protein.faa
 GFF=../references/proteus/GCF_000069965.1_ASM6996v1_genomic.gff
 FAS=../references/proteus/GCF_000069965.1_ASM6996v1_genomic.fna
 CDS=../references/proteus/GCF_000069965.1_ASM6996v1_cds_from_genomic.fna
-
 # make db
 mkdir -p $DB/$ORG
 cp $GFF $DB/$ORG/genes.gff
