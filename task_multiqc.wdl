@@ -41,8 +41,6 @@ task task_multiqc {
 task task_multiqc_global {
     input {
         Array[File] reports_fastq_raw
-        #Array[File] reports_fastq_raw_R1
-        #Array[File] reports_fastq_raw_R2
         Array[File] reports_fastp_tight
         Array[File] reports_fastp_loose
         Array[File] reports_centrifuge 
@@ -53,8 +51,6 @@ task task_multiqc_global {
         Array[File] reports_seqkit_raw 
         Array[File] reports_seqkit_after_cleanup
         Array[File] reports_fastq_after_cleanup
-        #Array[File] reports_fastq_after_cleanup_R1
-        #Array[File] reports_fastq_after_cleanup_R2
         File? config_file 
         String outputPrefix
         String docker = "multiqc/multiqc:v1.33"
