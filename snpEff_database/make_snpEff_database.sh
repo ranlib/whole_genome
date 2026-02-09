@@ -187,9 +187,9 @@ FAA=../references/enterobacter/GCF_014169635.1_ASM1416963v1_protein.faa
 mkdir -p $DB/$ORG
 cp $FAS $DB/$ORG/sequences.fa
 cp $GFF $DB/$ORG/genes.gff
-cp $GBK $DB/$ORG/genes.gbk
-cp $FAA $DB/$ORG/protein.fa
-cp $CDS $DB/$ORG/cds.fa
+#cp $GBK $DB/$ORG/genes.gbk
+#cp $FAA $DB/$ORG/protein.fa
+#cp $CDS $DB/$ORG/cds.fa
 echo "${ORG}.genome: ${ORG}" >> snpEff.config
 #docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -gff3 $ORG
 #docker run --rm -v .:/mnt -w /mnt dbest/snpeff:v5.4a snpEff build -noLog -c snpEff.config -genbank $ORG
