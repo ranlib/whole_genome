@@ -49,3 +49,8 @@ seqkit_seq_docu:
 run_seqkit_seq:
 	miniwdl run --debug --dir test-seqkit_seq --cfg miniwdl_production.cfg --input wf_seqkit_seq.json wf_seqkit_seq.wdl
 
+#
+# clean
+#
+clean:
+	rm *~ *.aux *.toc *.out *.log

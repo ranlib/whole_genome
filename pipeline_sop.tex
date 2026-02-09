@@ -1,0 +1,177 @@
+\documentclass[13pt,letter]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{textcomp} % fixes \text related errors
+\usepackage{amsmath}
+
+\title{Standard Operating Procedure (SOP)\\
+Whole Genome NGS Pipeline (wf\_ngs\_pipeline.wdl)}
+\author{Prepared by: Dieter Best}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Purpose}
+
+This SOP describes how to run and interpret results from the \texttt{wf\_ngs\_pipeline.wdl} workflow from the GitHub repository:
+
+\begin{itemize}
+  \item \url{https://github.com/ranlib/whole_genome}
+\end{itemize}
+
+The workflow processes paired-end Illumina whole-genome sequencing (WGS) data and performs:
+
+\begin{itemize}
+  \item Quality control and read trimming
+  \item Taxonomic classification
+  \item Reference alignment
+  \item Coverage and QC metrics
+  \item Variant calling and annotation
+  \item Summary reporting with MultiQC
+\end{itemize}
+
+\section{Pipeline Overview}
+
+The pipeline is written in Workflow Description Language (WDL) and processes multiple samples in parallel. Each sample passes through the following stages:
+
+\begin{enumerate}
+  \item Raw read QC
+  \item Read trimming and filtering
+  \item Post-trimming QC
+  \item Taxonomic classification
+  \item Alignment to reference genome
+  \item BAM metrics and whole-genome QC
+  \item Coverage estimation
+  \item Variant calling and structural variant detection
+  \item Variant annotation
+  \item Aggregated reporting
+\end{enumerate}
+
+\section{Workflow Steps}
+
+\subsection{Pre-Alignment Quality Control}
+
+\begin{itemize}
+  \item \textbf{SeqKit}: Summary statistics of raw reads.
+  \item \textbf{FastQC}: Quality metrics on raw FASTQ files.
+  \item \textbf{Fastp (Loose \& Tight modes)}: Adapter trimming and quality filtering.
+  \item \textbf{SeqKit (post-cleaning)}: Statistics after trimming.
+  \item \textbf{FastQC (post-cleaning)}: QC reports on cleaned reads.
+\end{itemize}
+
+\subsection{Taxonomic Classification}
+
+\begin{itemize}
+  \item \textbf{Centrifuge}: Classification of reads to identify contamination or microbial composition.
+\end{itemize}
+
+\subsection{Alignment and BAM Processing}
+
+\begin{itemize}
+  \item \textbf{Minimap2}: Alignment of reads to reference genomes.
+  \item \textbf{SAMtools}: Indexing reference FASTA and BAM files.
+  \item \textbf{Picard / SAMtools metrics}: Alignment and insert-size metrics.
+\end{itemize}
+
+\subsection{Coverage and Whole-Genome QC}
+
+\begin{itemize}
+  \item \textbf{GATK WGS Metrics}: Coverage and quality metrics.
+  \item \textbf{Mosdepth}: Depth of coverage statistics.
+\end{itemize}
+
+\subsection{Variant Calling and Annotation}
+
+\begin{itemize}
+  \item \textbf{GATK}: Variant calling producing VCF files.
+  \item \textbf{Delly}: Structural variant detection.
+  \item \textbf{VCF concatenation}: Merge SNVs and SVs.
+  \item \textbf{SnpEff}: Variant effect annotation.
+\end{itemize}
+
+\subsection{Summary Reporting}
+
+\begin{itemize}
+  \item \textbf{MultiQC}: Aggregates all QC, alignment, coverage, and variant reports into a single HTML report.
+\end{itemize}
+
+\section{Inputs}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Parameter} & \textbf{Description} \\
+\midrule
+reads1 & Forward FASTQ files \\
+reads2 & Reverse FASTQ files \\
+samplenames & Unique sample identifiers \\
+references & Reference genome FASTA files \\
+dockerImages & Map of Docker images for tools \\
+threads & Number of CPU threads \\
+memory & Memory allocation per task \\
+disk\_size & Disk allocation for large tasks \\
+\bottomrule
+\end{longtable}
+
+\section{Outputs}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Output} & \textbf{File Type} \\
+\midrule
+Cleaned reads & FASTQ \\
+FastQC reports & HTML, ZIP \\
+Centrifuge classification & TSV \\
+Alignments & BAM, BAI \\
+Coverage reports & TXT, TSV \\
+Variant calls & VCF, VCF.GZ \\
+Annotated variants & VCF \\
+MultiQC report & HTML \\
+\bottomrule
+\end{longtable}
+
+\section{Execution Instructions}
+
+Example command using Cromwell:
+
+\begin{lstlisting}[language=bash]
+  java -jar cromwell.jar run wf_ngs_pipeline.wdl -i inputs.json
+\end{lstlisting}
+
+\section{Best Practices}
+
+\begin{itemize}
+  \item Validate FASTQ file integrity before running the pipeline.
+  \item Ensure reference genomes are properly indexed.
+  \item Verify Docker images are accessible.
+  \item Adjust memory and CPU resources based on dataset size.
+  \item Review MultiQC output for global QC assessment.
+\end{itemize}
+
+\section{Troubleshooting}
+
+\begin{itemize}
+  \item \textbf{Workflow fails at startup}: Check all required inputs are provided in \texttt{inputs.json}.
+  \item \textbf{Out-of-memory errors}: Increase memory settings for alignment or variant calling tasks.
+  \item \textbf{Empty MultiQC report}: Ensure all upstream tasks completed successfully.
+\end{itemize}
+
+\section{References}
+
+\begin{itemize}
+  \item \url{https://github.com/ranlib/whole_genome}
+  \item \url{https://openwdl.org}
+  \item \url{https://github.com/broadinstitute/cromwell}
+\end{itemize}
+
+\end{document}
