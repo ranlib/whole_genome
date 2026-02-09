@@ -23987,7 +23987,6 @@ FEATURES             Location/Qualifiers
                      insertion. Proposed by Mariani et al. 1993. J. Gen.
                      Microbiol. 139: 1767-1772. Note that as motif palindromic
                      could be part of inverted repeat itself."
-                     /pseudogene="unknown"
      gene            complement(1278904..1279617)
                      /locus_tag="Rv1151c"
                      /db_xref="GeneID:886026"
@@ -24061,10 +24060,10 @@ FEATURES             Location/Qualifiers
                      /db_xref="GeneID:885604"
      CDS             1281429..1281872
                      /locus_tag="Rv1155"
-                     /experiment="DESCRIPTION:Protein
-                     crystallograph[PMID:15620716]"
                      /experiment="DESCRIPTION:Protein crystallography and
                      characterization[PMID:16239726]"
+                     /experiment="DESCRIPTION:Protein
+                     crystallograph[PMID:15620716]"
                      /experiment="EXISTENCE:Mass spectrometry[PMID:20429878]"
                      /experiment="EXISTENCE:Mass spectrometry[PMID:21920479]"
                      /codon_start=1
@@ -82052,6 +82051,7 @@ FEATURES             Location/Qualifiers
                      /db_xref="GeneID:886258"
                      /translation="MTKGKRTFQPNNRRRARVHGFRLRMRTRAGRSIVSSRRRKGRRT
                      LSA"
+CONTIG      join(AL123456.3:1..4411532)
 ORIGIN      
         1 ttgaccgatg accccggttc aggcttcacc acagtgtgga acgcggtcgt ctccgaactt
        61 aacggcgacc ctaaggttga cgacggaccc agcagtgatg ctaatctcag cgctccgctg
@@ -155580,4 +155580,3 @@ ORIGIN
   4411441 agccatgtgg acagttcacc tgcccacaac aacggttgta gctcgacccg gaaccaagac
   4411501 ccggaactaa cgagaaccag ggagatacgt cg
 //
-
