@@ -87,6 +87,8 @@ task FastQC {
         Array[File] fastqs
         String prefix = "fastqc"
         Int threads = 32
+        String docker = "staphb/fastqc:0.12.1"
+        String memory = "8GB"
     }
     
     command {
@@ -100,8 +102,8 @@ task FastQC {
     }
     
     runtime {
-        docker: "staphb/fastqc:0.12.1"
-        cpu: 4
-        memory: "4G"
+        docker: docker
+        memory: memory
+        cpu: threads
     }
 }
