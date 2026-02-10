@@ -16,6 +16,7 @@
         "multiqc": "multiqc/multiqc:v1.33",
         "picard": "quay.io/biocontainers/picard:3.4.0--hdfd78af_0",
         "samtools": "dbest/samtools:v1.23",
+	"delly": "dbest/delly:v1.0.0",
         "seqkit": "dbest/seqkit:v2.10.0",
 	"snpeff": "dbest/snpeff:v5.4a"
     },
