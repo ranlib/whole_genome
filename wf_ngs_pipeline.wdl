@@ -19,6 +19,8 @@ struct Sample {
     String sample_id
     File fastq_R1
     File fastq_R2
+    File reference
+    String genome
 }
 
 workflow wf_ngs_pipeline {
@@ -61,6 +63,8 @@ workflow wf_ngs_pipeline {
     # snpEff
     File dataDir
     File config
+    # delly
+    String svType = "DEL"
     # concat vcfs
     String output_vcf_name = "all_variants.vcf"
     # multiqc
@@ -86,7 +90,11 @@ workflow wf_ngs_pipeline {
     }
 
     call fastqc.FastQC as fastqc_raw {
-        input: fastqs = [reads1[indx], reads2[indx]]
+        input:
+        fastqs = [reads1[indx], reads2[indx]],
+        memory = memory,
+        threads = threads,
+        docker = dockerImages["fastqc"]
     }
  
     call fastp.task_fastp as fastp_loose {
@@ -130,7 +138,11 @@ workflow wf_ngs_pipeline {
     }
 
     call fastqc.FastQC as fastqc_after_cleanup {
-        input: fastqs=[fastp_tight.clean_read1,fastp_tight.clean_read2]
+        input:
+        fastqs = [fastp_tight.clean_read1,fastp_tight.clean_read2],
+        memory = memory,
+        threads = threads,
+        docker = dockerImages["fastqc"]
     }
 
     call centrifuge.wf_centrifuge {
@@ -222,10 +234,12 @@ workflow wf_ngs_pipeline {
     }
     
     call delly.task_delly {
-      input:
-      bamFile = wf_minimap2.bam,
-      bamIndex = wf_minimap2.bai,
-      reference = references[indx]
+        input:
+        bamFile = wf_minimap2.bam,
+        bamIndex = wf_minimap2.bai,
+        reference = references[indx],
+        svType = svType,
+        docker = dockerImages["delly"]
     }
     
     if (defined(task_delly.vcfFile)) {
@@ -233,21 +247,22 @@ workflow wf_ngs_pipeline {
 	        input:
 	        vcf1 = wf_gatk.vcfFilteredFile,
 	        vcf2 = select_first([task_delly.vcfFile]),
-	        output_vcf_name = samplenames[indx]  + "_all_variants.vcf"
+	        output_vcf_name = samplenames[indx]  + "_all_variants.vcf",
+            docker = dockerImages["samtools"]
         }
     }
     
     call snpEff.task_snpEff {
-      input:
-      vcf = select_first([task_concat_2_vcfs.concatenated_vcf,wf_gatk.vcfFilteredFile]),
-      genome = genomes[indx],
-      config = config,
-      dataDir = dataDir,
-      outputPath = samplenames[indx] + "_snpeff.vcf",
-      csvStats = samplenames[indx] + "_snpeff_summary.csv",
-      stats = samplenames[indx] + "_snpeff_summary.html",
-      memory = memory,
-      docker = dockerImages["snpeff"]
+        input:
+        vcf = select_first([task_concat_2_vcfs.concatenated_vcf,wf_gatk.vcfFilteredFile]),
+        genome = genomes[indx],
+        config = config,
+        dataDir = dataDir,
+        outputPath = samplenames[indx] + "_snpeff.vcf",
+        csvStats = samplenames[indx] + "_snpeff_summary.csv",
+        stats = samplenames[indx] + "_snpeff_summary.html",
+        memory = memory,
+        docker = dockerImages["snpeff"]
     }
     
     call multiqc.task_multiqc_global as multiqc_single {
