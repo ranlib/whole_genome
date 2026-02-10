@@ -11,18 +11,20 @@ task task_delly {
   }
 
   String outFile = sub(basename(bamFile),".bam",".delly.bcf")
-  String outVCF = sub(basename(bamFile),".bam",".delly.vcf.gz")
+  #String outVCF = sub(basename(bamFile),".bam",".delly.vcf.gz")
+  String outVCF = sub(basename(bamFile),".bam",".delly.vcf")
 
-  command {
-    set -x
-    delly call -t ~{svType} -o ~{outFile} -g ~{reference} ~{bamFile}
-    if [ $? -eq 0 ] ; then
-    bcftools view ~{outFile} | gzip > ~{outVCF}
-    fi
-  }
+  command <<<
+      set -euxo
+      delly call -t ~{svType} -o ~{outFile} -g ~{reference} ~{bamFile}
+      if [ $? -eq 0 ] ; then
+      #bcftools view ~{outFile} | gzip > ~{outVCF}
+      bcftools view ~{outFile} > ~{outVCF}
+      fi
+  >>>
 
   output {
-    File? vcfFile = outVCF
+      File? vcfFile = outVCF
   }
 
   runtime {
