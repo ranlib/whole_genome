@@ -8,12 +8,16 @@ task task_concat_2_vcfs {
     String docker = "staphb/bcftools:1.17"
   }
   
-  command {
-    set -x
-    bcftools sort -o ~{vcf1}.sorted ~{vcf1}
-    bcftools sort -o ~{vcf2}.sorted ~{vcf2}
-    bcftools concat ~{vcf1}.sorted ~{vcf2}.sorted -o ${output_vcf_name}
-  }
+  command <<<
+      set -euxo
+      bcftools sort -o ~{vcf1}.sorted ~{vcf1}
+      bcftools sort -o ~{vcf2}.sorted ~{vcf2}
+      bgzip ~{vcf1}.sorted
+      bgzip ~{vcf2}.sorted
+      tabix -p vcf ~{vcf1}.sorted.gz
+      tabix -p vcf ~{vcf2}.sorted.gz
+      bcftools concat --allow-overlaps -o ~{output_vcf_name} ~{vcf1}.sorted.gz ~{vcf2}.sorted.gz
+  >>>
   
   output {
     File concatenated_vcf = output_vcf_name
