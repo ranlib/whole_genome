@@ -2,6 +2,7 @@ version 1.0
 
 import "task_fastqc.wdl" as fastqc
 import "task_fastp.wdl" as fastp
+import "HostDepletionBwa.wdl"
 import "task_samtools.wdl" as samtools
 import "task_seqkit.wdl" as seqkit
 import "wf_centrifuge.wdl" as centrifuge
@@ -43,6 +44,14 @@ workflow wf_ngs_pipeline {
     # fastp
     File adapters
     Int minimum_read_length
+    # Host depletion
+    File host_fasta
+    File host_fasta_amb
+    File host_fasta_ann
+    File host_fasta_bwt
+    File host_fasta_pac
+    File host_fasta_sa
+    Float host_pct_cutoff = 70.0
     # minimap2
     Int threads
     String memory
@@ -145,6 +154,20 @@ workflow wf_ngs_pipeline {
         docker = dockerImages["fastqc"]
     }
 
+    call HostDepletionBwa.HostDepletionWorkflow {
+        input:
+        trimmed_R1      = fastp_tight.clean_read1,
+        trimmed_R2      = fastp_tight.clean_read2,
+        host_fasta      = host_fasta,
+        host_fasta_amb  = host_fasta_amb,
+        host_fasta_ann  = host_fasta_ann,
+        host_fasta_bwt  = host_fasta_bwt,
+        host_fasta_pac  = host_fasta_pac,
+        host_fasta_sa   = host_fasta_sa,
+        host_pct_cutoff = host_pct_cutoff,
+        sample_id       = samplenames[indx]
+    }
+    
     call centrifuge.wf_centrifuge {
       input:
       read1 = fastp_tight.clean_read1,

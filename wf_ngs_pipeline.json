@@ -47,6 +47,13 @@
         "NC_000962.3",
         "NC_000962.3"
     ],
+    "wf_ngs_pipeline.host_fasta": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa",
+    "wf_ngs_pipeline.host_fasta_amb": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa.amb",
+    "wf_ngs_pipeline.host_fasta_ann":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.ann",
+    "wf_ngs_pipeline.host_fasta_bwt":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.bwt",
+    "wf_ngs_pipeline.host_fasta_pac":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.pac",
+    "wf_ngs_pipeline.host_fasta_sa":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.sa",
+    "wf_ngs_pipeline.host_pct_cutoff": 70.0,
     "wf_ngs_pipeline.indexFiles": [
         "/home/dbest/data/centrifuge/hpvc.1.cf",
         "/home/dbest/data/centrifuge/hpvc.2.cf",
