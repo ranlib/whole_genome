@@ -43,7 +43,8 @@ task task_multiqc_global {
         Array[File] reports_fastq_raw
         Array[File] reports_fastp_tight
         Array[File] reports_fastp_loose
-        Array[File] reports_centrifuge 
+        Array[File] reports_centrifuge
+        Array[File] reports_host_contamination
         Array[File] reports_picard     
         Array[File] reports_bam        
         Array[File?] reports_mosdepth  
@@ -51,7 +52,7 @@ task task_multiqc_global {
         Array[File] reports_seqkit_raw 
         Array[File] reports_seqkit_after_cleanup
         Array[File] reports_fastq_after_cleanup
-        File? config_file 
+        File config_file 
         String outputPrefix
         String docker = "multiqc/multiqc:v1.33"
         String memory = "8GB"
@@ -60,7 +61,7 @@ task task_multiqc_global {
     
     command <<<
         set -euxo
-        mkdir -p multiqc_input/{fastq_raw,fastq_raw_R1,fastq_raw_R2,fastp_tight,fastp_loose,centrifuge,picard,bam,mosdepth,snpEff,seqkit_raw,fastq_after_cleanup,fastq_after_cleanup_R1,fastq_after_cleanup_R2,seqkit_after_cleanup}
+        mkdir -p multiqc_input/{fastq_raw,fastq_raw_R1,fastq_raw_R2,fastp_tight,fastp_loose,centrifuge,picard,bam,mosdepth,snpEff,seqkit_raw,fastq_after_cleanup,fastq_after_cleanup_R1,fastq_after_cleanup_R2,seqkit_after_cleanup,host_contamination}
         
         # FastQC_raw
         for f in ~{sep=' ' reports_fastq_raw}; do
@@ -80,6 +81,11 @@ task task_multiqc_global {
         # Centrifuge
         for f in ~{sep=' ' reports_centrifuge}; do
             ln -s "$f" multiqc_input/centrifuge/
+        done
+
+        # host contamination
+        for f in ~{sep=' ' reports_host_contamination}; do
+            ln -s "$f" multiqc_input/host_contamination/
         done
 
         # Picard

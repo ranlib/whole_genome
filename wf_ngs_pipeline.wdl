@@ -170,8 +170,8 @@ workflow wf_ngs_pipeline {
     
     call centrifuge.wf_centrifuge {
       input:
-      read1 = fastp_tight.clean_read1,
-      read2 = fastp_tight.clean_read2,
+      read1 = HostDepletionWorkflow.nohost_R1,
+      read2 = HostDepletionWorkflow.nohost_R2,
       samplename = samplenames[indx],
       indexFiles = indexFiles,
       docker = dockerImages["centrifuge"],
@@ -183,8 +183,8 @@ workflow wf_ngs_pipeline {
       
     call minimap2.wf_minimap2 {
       input:
-      read1 = fastp_tight.clean_read1,
-      read2 = fastp_tight.clean_read2,
+      read1 = HostDepletionWorkflow.nohost_R1,
+      read2 = HostDepletionWorkflow.nohost_R2,
       reference = references[indx],
       samplename = samplenames[indx],
       threads = threads,
@@ -300,7 +300,8 @@ workflow wf_ngs_pipeline {
         reports_snpEff      = [task_snpEff.snpEff_summary_csv],
         reports_seqkit_raw  = [seqkit_stats_raw.stats_output],
         reports_seqkit_after_cleanup = [seqkit_after_cleanup.stats_output],
-        reports_fastq_after_cleanup = fastqc_after_cleanup.zip_reports,
+        reports_fastq_after_cleanup  = fastqc_after_cleanup.zip_reports,
+        reports_host_contamination   = [HostDepletionWorkflow.host_contamination],
         config_file = config_file,
         outputPrefix = "multiqc",
         docker = dockerImages["multiqc"],
@@ -318,8 +319,9 @@ workflow wf_ngs_pipeline {
   Array[File?] reports_mosdepth   = flatten([task_mosdepth.global_dist, task_mosdepth.regions_depth])
   Array[File] reports_snpEff      = flatten([task_snpEff.snpEff_summary_csv])
   Array[File] reports_seqkit_raw  = flatten([seqkit_stats_raw.stats_output])
-  Array[File] reports_fastq_after_cleanup = flatten(fastqc_after_cleanup.zip_reports)
+  Array[File] reports_fastq_after_cleanup  = flatten(fastqc_after_cleanup.zip_reports)
   Array[File] reports_seqkit_after_cleanup = flatten([seqkit_after_cleanup.stats_output])
+  Array[File] reports_host_contamination   = flatten([HostDepletionWorkflow.host_contamination])
   call multiqc.task_multiqc_global {
     input:
       reports_fastq_raw   = reports_fastq_raw,
@@ -332,7 +334,8 @@ workflow wf_ngs_pipeline {
       reports_snpEff      = reports_snpEff,
       reports_seqkit_raw  = reports_seqkit_raw,
       reports_seqkit_after_cleanup = reports_seqkit_after_cleanup,
-      reports_fastq_after_cleanup = reports_fastq_after_cleanup,
+      reports_fastq_after_cleanup  = reports_fastq_after_cleanup,
+      reports_host_contamination   = reports_host_contamination,
       config_file = config_file,
       outputPrefix = "multiqc",
       docker = dockerImages["multiqc"],
@@ -365,6 +368,9 @@ workflow wf_ngs_pipeline {
     Array[File] centrifuge_kraken_style = wf_centrifuge.krakenStyleTSV
     Array[File] centrifuge_summary = wf_centrifuge.summaryReportTSV
 
+    # host contamination
+    Array[File] host_contamination = HostDepletionWorkflow.host_contamination
+      
     # minimap
     Array[File] bam = wf_minimap2.bam
     Array[File] bai = wf_minimap2.bai

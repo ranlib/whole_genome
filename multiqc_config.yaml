@@ -68,6 +68,10 @@ module_order:
       path_filters:
         - "*/seqkit_after_cleanup/*stats.tsv"
 
+  - custom_content:
+      name: "PREPROCESS: Host contamination"
+      info: "Results of host depletion workflow."
+
   - kraken:
       name: "PREPROCESS: Kraken 2 (tight trimming)"
       info: "Kraken 2 classification results for reads after adapter trimming with fastp."
@@ -94,6 +98,34 @@ module_order:
       path_filters:
         - "*mosdepth.summary.txt"
         - "*mosdepth.global.dist.txt"
+
+custom_data:
+  host_contamination:
+    file_format: tsv
+    section_name: "PREPROCESS: Host contamination"
+    description: "Results of host depletion workflow."
+    plot_type: table
+    pconfig:
+      id: host_fraction
+      title: Host Fraction
+
+sp:
+  host_contamination:
+    fn: "*.host_contamination.tsv"
+
+table_columns_visible:
+  host_contamination:
+    qc_flag: true
+
+table_conditional_formatting:
+  host_contamination:
+    qc_flag:
+      PASS:
+        background: "#c7e9c0"
+      WARN:
+        background: "#fff7bc"
+      FAIL:
+        background: "#fcbba1"
 
 kraken:
   top_n: 10
