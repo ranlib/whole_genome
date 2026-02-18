@@ -8,6 +8,7 @@
     "wf_ngs_pipeline.disk_size": 100,
     "wf_ngs_pipeline.dockerImages": {
         "centrifuge": "dbest/centrifuge:v1.0.4.2",
+        "delly": "dbest/delly:v1.0.0",
         "fastp": "dbest/fastp:v1.0.1",
         "fastqc": "staphb/fastqc:0.12.1",
         "gatk": "broadinstitute/gatk:4.6.2.0",
@@ -16,9 +17,8 @@
         "multiqc": "multiqc/multiqc:v1.33",
         "picard": "quay.io/biocontainers/picard:3.4.0--hdfd78af_0",
         "samtools": "dbest/samtools:v1.23",
-	"delly": "dbest/delly:v1.0.0",
         "seqkit": "dbest/seqkit:v2.10.0",
-	"snpeff": "dbest/snpeff:v5.4a"
+        "snpeff": "dbest/snpeff:v5.4a"
     },
     "wf_ngs_pipeline.fastp_tight.adapter_sequence": "AGATCGGAAGAGCACACGTC",
     "wf_ngs_pipeline.fastp_tight.adapter_sequence_r2": "AGATCGGAAGAGCGTCGTGTAGGAAAGAGTG",
@@ -43,17 +43,13 @@
     "wf_ngs_pipeline.fastp_tight.umi_len": 0,
     "wf_ngs_pipeline.fastp_tight.umi_loc": "read1",
     "wf_ngs_pipeline.fastp_tight.unqualified_percent_limit": 40,
-    "wf_ngs_pipeline.genomes": [
-        "NC_000962.3",
-        "NC_000962.3"
-    ],
     "wf_ngs_pipeline.host_fasta": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa",
     "wf_ngs_pipeline.host_fasta_amb": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa.amb",
-    "wf_ngs_pipeline.host_fasta_ann":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.ann",
-    "wf_ngs_pipeline.host_fasta_bwt":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.bwt",
-    "wf_ngs_pipeline.host_fasta_pac":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.pac",
-    "wf_ngs_pipeline.host_fasta_sa":"/home/dbest/Software/viral_surveillance/references/human/hg38.fa.sa",
-    "wf_ngs_pipeline.host_pct_cutoff": 70.0,
+    "wf_ngs_pipeline.host_fasta_ann": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa.ann",
+    "wf_ngs_pipeline.host_fasta_bwt": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa.bwt",
+    "wf_ngs_pipeline.host_fasta_pac": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa.pac",
+    "wf_ngs_pipeline.host_fasta_sa": "/home/dbest/Software/viral_surveillance/references/human/hg38.fa.sa",
+    "wf_ngs_pipeline.host_pct_cutoff": 70,
     "wf_ngs_pipeline.indexFiles": [
         "/home/dbest/data/centrifuge/hpvc.1.cf",
         "/home/dbest/data/centrifuge/hpvc.2.cf",
@@ -67,21 +63,21 @@
     "wf_ngs_pipeline.min_reads_per_strand": 1,
     "wf_ngs_pipeline.minimum_read_length": 50,
     "wf_ngs_pipeline.outputDir": ".",
-    "wf_ngs_pipeline.reads1": [
-        "data/ERR552797_30percent_1.fq.gz",
-        "data/ERR552797_15percent_1.fq.gz"
-    ],
-    "wf_ngs_pipeline.reads2": [
-        "data/ERR552797_30percent_2.fq.gz",
-        "data/ERR552797_15percent_2.fq.gz"
-    ],
-    "wf_ngs_pipeline.references": [
-        "/home/dbest/Software/whole_genome/references/tb/GCF_000195955.2_ASM19595v2_genomic.fna",
-        "/home/dbest/Software/whole_genome/references/tb/GCF_000195955.2_ASM19595v2_genomic.fna"
-    ],
-    "wf_ngs_pipeline.samplenames": [
-        "ERR552797_30percent",
-        "ERR552797_15percent"
+    "wf_ngs_pipeline.samples": [
+        {
+            "fastq_R1": "data/ERR552797_30percent_1.fq.gz",
+            "fastq_R2": "data/ERR552797_30percent_2.fq.gz",
+            "genome": "NC_000962.3",
+            "reference": "/home/dbest/Software/whole_genome/references/tb/GCF_000195955.2_ASM19595v2_genomic.fna",
+            "sample_id": "ERR552797_30percent"
+        },
+        {
+            "fastq_R1": "data/ERR552797_15percent_1.fq.gz",
+            "fastq_R2": "data/ERR552797_15percent_2.fq.gz",
+            "genome": "NC_000962.3",
+            "reference": "/home/dbest/Software/whole_genome/references/tb/GCF_000195955.2_ASM19595v2_genomic.fna",
+            "sample_id": "ERR552797_15percent"
+        }
     ],
     "wf_ngs_pipeline.task_collect_wgs_metrics.coverage_cap": 1000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minBaseQuality": 20,

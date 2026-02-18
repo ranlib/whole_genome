@@ -17,20 +17,16 @@ import "task_snpEff.wdl" as snpEff
 import "task_multiqc.wdl" as multiqc
 
 struct Sample {
-    String sample_id
     File fastq_R1
     File fastq_R2
-    File reference
     String genome
+    File reference
+    String sample_id
 }
 
 workflow wf_ngs_pipeline {
   input {
-    Array[File]+ reads1
-    Array[File]+ reads2
-    Array[File]+ references
-    Array[String]+ samplenames
-    Array[String]+ genomes
+    Array[Sample]+ samples
     Map[String, String] dockerImages
     # seqkit
     Boolean all_stats = true
@@ -80,12 +76,12 @@ workflow wf_ngs_pipeline {
     File config_file 
   }
 
-  scatter ( indx in range(length(reads1)) ) {
+  scatter ( s in samples ) {
 
     call seqkit.task_seqkit_stats as seqkit_stats_raw {
         input:
-        input_file = [ reads1[indx], reads2[indx] ],
-        out_file = samplenames[indx] + "_" + out_file,
+        input_file = [s.fastq_R1, s.fastq_R2],
+        out_file = s.sample_id + "_" + out_file,
         all_stats = all_stats,
         use_basename = use_basename,
         fq_encoding = fq_encoding,
@@ -100,7 +96,7 @@ workflow wf_ngs_pipeline {
 
     call fastqc.FastQC as fastqc_raw {
         input:
-        fastqs = [reads1[indx], reads2[indx]],
+        fastqs = [s.fastq_R1, s.fastq_R2],
         memory = memory,
         threads = threads,
         docker = dockerImages["fastqc"]
@@ -108,9 +104,9 @@ workflow wf_ngs_pipeline {
  
     call fastp.task_fastp as fastp_loose {
       input:
-      read1 = reads1[indx],
-      read2 = reads2[indx],
-      sample_id = "fastp_loose_" + samplenames[indx],
+      read1 = s.fastq_R1,
+      read2 = s.fastq_R2,
+      sample_id = s.sample_id + "_fastp_loose",
       minimum_read_length = 15,
       adapters = adapters,
       docker_image = dockerImages["fastp"],
@@ -120,9 +116,9 @@ workflow wf_ngs_pipeline {
 
     call fastp.task_fastp as fastp_tight {
       input:
-      read1 = reads1[indx],
-      read2 = reads2[indx],
-      sample_id = "fastp_tight_" + samplenames[indx],
+      read1 = s.fastq_R1,
+      read2 = s.fastq_R2,
+      sample_id = s.sample_id + "_fastp_tight",
       minimum_read_length = minimum_read_length,
       adapters = adapters,
       docker_image = dockerImages["fastp"],
@@ -133,7 +129,7 @@ workflow wf_ngs_pipeline {
     call seqkit.task_seqkit_stats as seqkit_after_cleanup {
       input:
       input_file = [ fastp_tight.clean_read1, fastp_tight.clean_read2 ],
-      out_file = samplenames[indx] + "_" + out_file,
+      out_file = s.sample_id + "_" + out_file,
       all_stats = all_stats,
       use_basename = use_basename,
       fq_encoding = fq_encoding,
@@ -165,14 +161,14 @@ workflow wf_ngs_pipeline {
         host_fasta_pac  = host_fasta_pac,
         host_fasta_sa   = host_fasta_sa,
         host_pct_cutoff = host_pct_cutoff,
-        sample_id       = samplenames[indx]
+        sample_id       = s.sample_id
     }
     
     call centrifuge.wf_centrifuge {
       input:
       read1 = HostDepletionWorkflow.nohost_R1,
       read2 = HostDepletionWorkflow.nohost_R2,
-      samplename = samplenames[indx],
+      samplename = s.sample_id,
       indexFiles = indexFiles,
       docker = dockerImages["centrifuge"],
       threads = threads,
@@ -185,17 +181,17 @@ workflow wf_ngs_pipeline {
       input:
       read1 = HostDepletionWorkflow.nohost_R1,
       read2 = HostDepletionWorkflow.nohost_R2,
-      reference = references[indx],
-      samplename = samplenames[indx],
+      reference = s.reference,
+      samplename = s.sample_id,
       threads = threads,
       memory = memory,
       dockerImages = {"samtools": dockerImages["samtools"], "minimap": dockerImages["minimap"]},
-      outputPrefix = samplenames[indx]
+      outputPrefix = s.sample_id
     }
     
     call samtools.DictAndFaidx {
       input:
-      inputFile = references[indx],
+      inputFile = s.reference,
       memory = memory,
       docker = dockerImages["samtools"]
     }
@@ -205,7 +201,7 @@ workflow wf_ngs_pipeline {
       bam = wf_minimap2.bam,
       bamIndex = wf_minimap2.bai,
       outputDir = outputDir,
-      referenceFasta = references[indx],
+      referenceFasta = s.reference,
       referenceFastaFai = DictAndFaidx.outputFastaFai,
       referenceFastaDict = DictAndFaidx.outputFastaDict,
       collectAlignmentSummaryMetrics = collectAlignmentSummaryMetrics,
@@ -218,9 +214,9 @@ workflow wf_ngs_pipeline {
     call wgsQC.task_collect_wgs_metrics {
       input:
         bam = wf_minimap2.bam,
-        reference = references[indx],
-        outputFile = samplenames[indx] + "_collect_wgs_metrics.txt",
-        sensitivityFile = samplenames[indx] + "_collect_wgs_sensitivity_metrics.txt",
+        reference = s.reference,
+        outputFile = s.sample_id + "_collect_wgs_metrics.txt",
+        sensitivityFile = s.sample_id + "_collect_wgs_sensitivity_metrics.txt",
         docker = dockerImages["gatk"],
         memory = memory
     }
@@ -231,7 +227,7 @@ workflow wf_ngs_pipeline {
       input_bai = wf_minimap2.bai,
       threads = threads,
       mapq = 20,
-      prefix = samplenames[indx],
+      prefix = s.sample_id,
       memory = memory,
       disk = "10GB",
       docker = dockerImages["mosdepth"]
@@ -242,7 +238,7 @@ workflow wf_ngs_pipeline {
         inputBams = [wf_minimap2.bam],
         inputBamsIndex = [wf_minimap2.bai],
         intervals = targetIntervals,
-        referenceFasta = references[indx],
+        referenceFasta = s.reference,
         referenceFastaDict = DictAndFaidx.outputFastaDict,
         referenceFastaFai = DictAndFaidx.outputFastaFai,
         min_reads_per_strand =  min_reads_per_strand,
@@ -260,7 +256,7 @@ workflow wf_ngs_pipeline {
         input:
         bamFile = wf_minimap2.bam,
         bamIndex = wf_minimap2.bai,
-        reference = references[indx],
+        reference = s.reference,
         svType = svType,
         docker = dockerImages["delly"]
     }
@@ -270,7 +266,7 @@ workflow wf_ngs_pipeline {
 	        input:
 	        vcf1 = wf_gatk.vcfFilteredFile,
 	        vcf2 = select_first([task_delly.vcfFile]),
-	        output_vcf_name = samplenames[indx]  + "_all_variants.vcf",
+	        output_vcf_name = s.sample_id + "_all_variants.vcf",
             docker = dockerImages["samtools"]
         }
     }
@@ -278,12 +274,12 @@ workflow wf_ngs_pipeline {
     call snpEff.task_snpEff {
         input:
         vcf = select_first([task_concat_2_vcfs.concatenated_vcf,wf_gatk.vcfFilteredFile]),
-        genome = genomes[indx],
+        genome = s.genome,
         config = config,
         dataDir = dataDir,
-        outputPath = samplenames[indx] + "_snpeff.vcf",
-        csvStats = samplenames[indx] + "_snpeff_summary.csv",
-        stats = samplenames[indx] + "_snpeff_summary.html",
+        outputPath = s.sample_id + "_snpeff.vcf",
+        csvStats = s.sample_id + "_snpeff_summary.csv",
+        stats = s.sample_id + "_snpeff_summary.html",
         memory = memory,
         docker = dockerImages["snpeff"]
     }
