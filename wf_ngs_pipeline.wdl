@@ -409,8 +409,9 @@ workflow wf_ngs_pipeline {
 
     # multiqc
     File report = task_multiqc_global.report
-    #File? report_pdf = task_multiqc_global.report_pdf
+    File report_data = task_multiqc_global.report_data
     Array[File] reports_multiqc_single = multiqc_single.report
+    Array[File] reports_multiqc_single_data = multiqc_single.report_data
   }
 
   meta {

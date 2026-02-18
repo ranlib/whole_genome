@@ -123,11 +123,12 @@ task task_multiqc_global {
             ln -s "$f" multiqc_input/fastq_after_cleanup/
         done
 
-        multiqc --config ~{config_file} --filename ~{outputPrefix} multiqc_input
+        multiqc --zip-data-dir --config ~{config_file} --filename ~{outputPrefix} multiqc_input
     >>>
     
     output {
         File report = "${outputPrefix}.html"
+        File report_data = "${outputPrefix}_data.zip"
     }
     
     runtime {
