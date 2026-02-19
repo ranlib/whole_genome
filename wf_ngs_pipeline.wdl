@@ -14,6 +14,7 @@ import "wf_gatk.wdl" as gatk
 import "task_delly.wdl" as delly
 import "task_concat_2_vcfs.wdl" as concat
 import "task_snpEff.wdl" as snpEff
+import "plasflow.wdl"
 import "task_multiqc.wdl" as multiqc
 
 struct Sample {
@@ -283,6 +284,14 @@ workflow wf_ngs_pipeline {
         memory = memory,
         docker = dockerImages["snpeff"]
     }
+
+    call plasflow.plasflow {
+        input:
+        read1_fastq = s.fastq_R1,
+        read2_fastq = s.fastq_R2,
+        sample_id   = s.sample_id,
+        dockerImages = { "spades": dockerImages["spades"], "plasflow": dockerImages["plasflow"], "seqkit": dockerImages["seqkit"] }
+    }
     
     call multiqc.task_multiqc_global as multiqc_single {
         input:
@@ -298,6 +307,7 @@ workflow wf_ngs_pipeline {
         reports_seqkit_after_cleanup = [seqkit_after_cleanup.stats_output],
         reports_fastq_after_cleanup  = fastqc_after_cleanup.zip_reports,
         reports_host_contamination   = [HostDepletionWorkflow.host_contamination],
+        reports_plasmids    = [plasflow.plasflow_summary_tsv],
         config_file = config_file,
         outputPrefix = "multiqc",
         docker = dockerImages["multiqc"],
@@ -318,6 +328,7 @@ workflow wf_ngs_pipeline {
   Array[File] reports_fastq_after_cleanup  = flatten(fastqc_after_cleanup.zip_reports)
   Array[File] reports_seqkit_after_cleanup = flatten([seqkit_after_cleanup.stats_output])
   Array[File] reports_host_contamination   = flatten([HostDepletionWorkflow.host_contamination])
+  Array[File] reports_plasmids    = flatten([plasflow.plasflow_summary_tsv])
   call multiqc.task_multiqc_global {
     input:
       reports_fastq_raw   = reports_fastq_raw,
@@ -332,6 +343,7 @@ workflow wf_ngs_pipeline {
       reports_seqkit_after_cleanup = reports_seqkit_after_cleanup,
       reports_fastq_after_cleanup  = reports_fastq_after_cleanup,
       reports_host_contamination   = reports_host_contamination,
+      reports_plasmids    = reports_plasmids,
       config_file = config_file,
       outputPrefix = "multiqc",
       docker = dockerImages["multiqc"],
@@ -402,6 +414,11 @@ workflow wf_ngs_pipeline {
 
     # snpEff
     Array[File?] vcfAnnotated = task_snpEff.outputVcf
+
+    # plasflow
+    Array[File] plasflow_tsv = plasflow.plasflow_tsv
+    Array[File] plasflow_summary_tsv = plasflow.plasflow_summary_tsv
+    Array[File] assembly_contigs = plasflow.assembly_contigs
 
     # multiqc
     File report = task_multiqc_global.report

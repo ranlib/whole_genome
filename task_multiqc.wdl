@@ -52,6 +52,7 @@ task task_multiqc_global {
         Array[File] reports_seqkit_raw 
         Array[File] reports_seqkit_after_cleanup
         Array[File] reports_fastq_after_cleanup
+        Array[File] reports_plasmids
         File config_file 
         String outputPrefix
         String docker = "multiqc/multiqc:v1.33"
@@ -61,7 +62,7 @@ task task_multiqc_global {
     
     command <<<
         set -euxo
-        mkdir -p multiqc_input/{fastq_raw,fastq_raw_R1,fastq_raw_R2,fastp_tight,fastp_loose,centrifuge,picard,bam,mosdepth,snpEff,seqkit_raw,fastq_after_cleanup,fastq_after_cleanup_R1,fastq_after_cleanup_R2,seqkit_after_cleanup,host_contamination}
+        mkdir -p multiqc_input/{fastq_raw,fastq_raw_R1,fastq_raw_R2,fastp_tight,fastp_loose,centrifuge,picard,bam,mosdepth,snpEff,seqkit_raw,fastq_after_cleanup,fastq_after_cleanup_R1,fastq_after_cleanup_R2,seqkit_after_cleanup,host_contamination,plasmids}
         
         # FastQC_raw
         for f in ~{sep=' ' reports_fastq_raw}; do
@@ -121,6 +122,11 @@ task task_multiqc_global {
         # FastQC_after_cleanup
         for f in ~{sep=' ' reports_fastq_after_cleanup}; do
             ln -s "$f" multiqc_input/fastq_after_cleanup/
+        done
+
+        # plasmids
+        for f in ~{sep=' ' reports_plasmids}; do
+            ln -s "$f" multiqc_input/plasmids/
         done
 
         multiqc --zip-data-dir --config ~{config_file} --filename ~{outputPrefix} multiqc_input

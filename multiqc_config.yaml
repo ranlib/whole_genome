@@ -109,9 +109,18 @@ custom_data:
       id: host_fraction
       title: Host Fraction
 
+  plasflow:
+    id: plasflow
+    section_name: "PREPROCESS: PlasFlow (plasmid contig fraction)"
+    description: "Fraction of assembled contigs ≥1 kb classified as plasmid"
+    plot_type: "table"
+    file_format: "tsv"
+
 sp:
   host_contamination:
     fn: "*.host_contamination.tsv"
+  plasflow:
+    fn: "*_plasflow_summary.tsv"
 
 table_columns_visible:
   host_contamination:
