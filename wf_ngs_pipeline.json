@@ -12,7 +12,7 @@
         "fastp": "dbest/fastp:v1.0.1",
         "fastqc": "staphb/fastqc:0.12.1",
         "gatk": "broadinstitute/gatk:4.6.2.0",
-        "minimap": "staphb/minimap2:2.29",
+        "minimap": "staphb/minimap2:2.30",
         "mosdepth": "brentp/mosdepth:v0.3.3",
         "multiqc": "multiqc/multiqc:v1.33",
         "picard": "quay.io/biocontainers/picard:3.4.0--hdfd78af_0",
@@ -81,6 +81,7 @@
             "sample_id": "ERR552797_15percent"
         }
     ],
+    "wf_ngs_pipeline.svType": "ALL",
     "wf_ngs_pipeline.task_collect_wgs_metrics.coverage_cap": 1000,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minBaseQuality": 20,
     "wf_ngs_pipeline.task_collect_wgs_metrics.minMappingQuality": 20,

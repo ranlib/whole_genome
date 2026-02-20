@@ -70,7 +70,7 @@ workflow wf_ngs_pipeline {
     File dataDir
     File config
     # delly
-    String svType = "DEL"
+    String svType = "ALL"
     # concat vcfs
     String output_vcf_name = "all_variants.vcf"
     # multiqc

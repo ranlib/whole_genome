@@ -5,7 +5,7 @@ task task_delly {
     File bamFile
     File bamIndex
     File reference
-    String svType = "DEL"
+    String svType = "ALL"
     String docker = "dbest/delly:v1.0.0"
     String memory = "32GB"
   }
